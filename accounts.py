@@ -1,11 +1,13 @@
-import pymongo
 from pymongo import MongoClient
 from dotenv import load_dotenv
 import os
-from colorama import init, Fore, Style
+from utils import (
+    print_header,
+    print_error,
+    print_success,
+    get_user_input,
+)
 
-# Initialize colorama
-init(autoreset=True)
 
 # Load environment variables from .env file
 load_dotenv()
@@ -15,22 +17,6 @@ MONGO_URI = os.getenv("MONGO_URI")
 client = MongoClient(MONGO_URI)
 db = client.instaposter
 accounts_collection = db.accounts
-
-
-def print_header(message):
-    print(f"\n{Fore.CYAN}{Style.BRIGHT}{message}{Style.RESET_ALL}")
-
-
-def print_error(message):
-    print(f"{Fore.RED}{message}{Style.RESET_ALL}")
-
-
-def print_success(message):
-    print(f"{Fore.GREEN}{message}{Style.RESET_ALL}")
-
-
-def get_user_input(prompt):
-    return input(f"{Fore.YELLOW}{prompt}{Style.RESET_ALL}").strip()
 
 
 def select_account_action(action_message):
