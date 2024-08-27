@@ -1,4 +1,8 @@
-from poster import post_reel_to_all_accounts, post_reel_single_account
+from poster import (
+    post_reel_to_all_accounts,
+    post_reel_single_account,
+    posting_strategy_1,
+)
 from utils import (
     print_header,
     print_error,
@@ -12,7 +16,8 @@ def main():
     actions = {
         1: post_reel_to_all_accounts,
         2: post_reel_single_account,
-        3: sys.exit,
+        3: posting_strategy_1,
+        4: sys.exit,
     }
 
     while True:
@@ -20,7 +25,8 @@ def main():
         print_header("Post Reels")
         print("1. Post to all accounts")
         print("2. Post to single account")
-        print("3. Exit")
+        print("3. Post to all accounts, S1")
+        print("4. Exit")
 
         try:
             action = int(get_user_input("Choose an action: "))

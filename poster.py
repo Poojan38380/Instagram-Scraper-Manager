@@ -13,6 +13,8 @@ from utils import (
 )
 from auth import login
 from reels import save_reel, post_reel
+import schedule
+import time
 
 
 def post_reel_to_all_accounts():
@@ -89,3 +91,24 @@ def post_reel_single_account():
 
     except Exception as e:
         print_error(f"Failed to post reel for single account: {str(e)}")
+
+
+def posting_strategy_1():
+    # Times converted to IST
+    first_time = "14:30"  # 2:30 PM IST
+    second_time = "20:30"  # 8:30 PM IST
+    third_time = "02:30"  # 2:30 AM IST (next day)
+
+    # Scheduling the job to run at specified times
+    schedule.every().day.at(first_time).do(post_reel_to_all_accounts)
+    schedule.every().day.at(second_time).do(post_reel_to_all_accounts)
+    schedule.every().day.at(third_time).do(post_reel_to_all_accounts)
+
+    print_success(
+        f"Posting strategy set up. Reels will be posted at {first_time}, {second_time}, and {third_time} IST daily."
+    )
+
+    # Keeping the script running to execute the scheduled tasks
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
