@@ -1,9 +1,7 @@
 from instagrapi import Client
 import os
 import pickle
-
-SESSION_FILE = "loginInfo/session.json"
-API_STORAGE_FILE = "loginInfo/api_client.pkl"
+from utils import print_header, print_error, print_success
 
 
 def ensure_directory_exists(filepath: str) -> None:
@@ -17,32 +15,38 @@ def ensure_directory_exists(filepath: str) -> None:
     directory = os.path.dirname(filepath)
     if not os.path.exists(directory):
         os.makedirs(directory)
-        print(f"Directory '{directory}' created.")
+        print_success(f"Directory '{directory}' created.")
 
 
-def save_api_client(api: Client) -> None:
+def save_api_client(api: Client, username: str) -> None:
     """
     Save the authenticated API client to local storage.
 
     Args:
         api (Client): The authenticated instagrapi Client instance.
+        username (str): The Instagram username.
     """
-    ensure_directory_exists(API_STORAGE_FILE)
-    with open(API_STORAGE_FILE, "wb") as file:
+    api_storage_file = f"loginInfo/{username}/api_client.pkl"
+    ensure_directory_exists(api_storage_file)
+    with open(api_storage_file, "wb") as file:
         pickle.dump(api, file)
-    print("API client saved to local storage.")
+    print_success(f"API client for {username} saved to local storage.")
 
 
-def load_api_client() -> Client:
+def load_api_client(username: str) -> Client:
     """
     Load the API client from local storage if it exists.
+
+    Args:
+        username (str): The Instagram username.
 
     Returns:
         Client: The instagrapi Client instance, or None if it doesn't exist.
     """
-    if os.path.exists(API_STORAGE_FILE):
-        with open(API_STORAGE_FILE, "rb") as file:
-            print("API client loaded from local storage.")
+    api_storage_file = f"loginInfo/{username}/api_client.pkl"
+    if os.path.exists(api_storage_file):
+        with open(api_storage_file, "rb") as file:
+            print_success(f"API client for {username} loaded from local storage.")
             return pickle.load(file)
     return None
 
@@ -60,44 +64,45 @@ def login(username: str, password: str) -> Client:
     """
     try:
         # Try to load API client from local storage
-        api = load_api_client()
+        api = load_api_client(username)
         if api:
             return api
 
-        print("Initializing login...")
+        print_header("Initializing login...")
         api = Client()
         api.delay_range = [1, 3]
 
-        ensure_directory_exists(SESSION_FILE)
+        session_file = f"loginInfo/{username}/session.json"
+        ensure_directory_exists(session_file)
 
-        if os.path.exists(SESSION_FILE):
-            print("Logging in with previous session...")
-            api.load_settings(SESSION_FILE)
+        if os.path.exists(session_file):
+            print_header("Logging in with previous session...")
+            api.load_settings(session_file)
             api.login(username, password)
         else:
-            print("Logging in with username and password...")
+            print_header("Logging in with username and password...")
             api.login(username, password)
-            api.dump_settings(SESSION_FILE)
+            api.dump_settings(session_file)
 
         # Verify login by fetching timeline feed
         api.get_timeline_feed()
-        print("Logged in successfully.")
+        print_success("Logged in successfully.")
 
         # Save the API client to local storage for future use
-        save_api_client(api)
+        save_api_client(api, username)
 
         return api
 
     except Exception as e:
-        print(f"An error occurred during login, check the login function: {str(e)}")
+        print_error(f"An error occurred during login: {str(e)}")
         if "login_required" in str(e):
-            print("Login failed. Please check your username and password.")
+            print_error("Login failed. Please check your username and password.")
         elif "challenge_required" in str(e):
-            print(
+            print_error(
                 "Instagram has flagged this login attempt. Please check your account for security challenges."
             )
         else:
-            print(
+            print_error(
                 "An unexpected error occurred. Please check the details and try again."
             )
         raise e  # Re-raise the exception for further handling if needed
