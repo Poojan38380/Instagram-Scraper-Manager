@@ -1,12 +1,13 @@
 import instaloader
 import requests
 import os
+from accounts import is_reel_posted_by_user
 
 # Create an instance of Instaloader
 L = instaloader.Instaloader()
 
 
-def save_reels(username, account_to_scrape):
+def save_reel(username, account_to_scrape):
     # Load the profile
     profile = instaloader.Profile.from_username(L.context, account_to_scrape)
 
@@ -17,6 +18,12 @@ def save_reels(username, account_to_scrape):
     for post in profile.get_posts():
         # Check if the post is a Reel (video)
         if post.typename == "GraphVideo" and post.is_video and post.video_url:
+
+            # Check if the reel is already posted
+            if is_reel_posted_by_user(username, post.shortcode):
+                print(f"Reel {post.shortcode} has already been posted.")
+                continue
+
             print(f"Downloading Reel: {post.shortcode}")
             video_url = post.video_url
             video_data = requests.get(video_url).content

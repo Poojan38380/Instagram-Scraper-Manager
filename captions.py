@@ -38,7 +38,3 @@ Performance and Variants
   - Towing Capacity: 14,000 pounds""",
     ]
     return random.choice(captions_options)
-
-
-# Example usage
-print(get_random_caption())

@@ -1,38 +1,26 @@
-import sys
-from accounts import (
-    add_new_account,
-    add_scraping_accounts,
-    view_scraping_accounts,
-    remove_scraping_account,
-    get_scraping_accounts,
-    get_all_usernames,
-)
-
+from poster import post_reel_to_all_accounts, post_reel_single_account
 from utils import (
     print_header,
     print_error,
     get_user_input,
     wait_for_enter,
 )
+import sys
 
 
 def main():
     actions = {
-        1: add_new_account,
-        2: add_scraping_accounts,
-        3: view_scraping_accounts,
-        4: remove_scraping_account,
-        5: sys.exit,
+        1: post_reel_to_all_accounts,
+        2: post_reel_single_account,
+        3: sys.exit,
     }
 
     while True:
         wait_for_enter()
-        print_header("Account Management System")
-        print("1. Add New Account")
-        print("2. Add Scraping Accounts")
-        print("3. View Scraping Accounts")
-        print("4. Remove Scraping Account")
-        print("5. Exit")
+        print_header("Post Reels")
+        print("1. Post to all accounts")
+        print("2. Post to single account")
+        print("3. Exit")
 
         try:
             action = int(get_user_input("Choose an action: "))

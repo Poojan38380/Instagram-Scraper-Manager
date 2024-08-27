@@ -1,6 +1,7 @@
 from colorama import init, Fore, Style
 import sys
 import random
+import os
 
 
 # Initialize colorama
@@ -41,3 +42,14 @@ def check_array_and_proceed(array, array_name="Array"):
         print(f"{array_name} is empty.")
         return False
     return True
+
+
+def delete_file(file_path):
+    try:
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+            print(f"File '{file_path}' has been deleted successfully.")
+        else:
+            print(f"File '{file_path}' does not exist.")
+    except Exception as e:
+        print(f"An error occurred: {e}")

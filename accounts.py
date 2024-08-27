@@ -9,6 +9,7 @@ from utils import (
 
 
 accounts_collection = db.accounts
+posted_reels_collection = db.posted_reels
 
 
 def select_account_action(action_message):
@@ -186,6 +187,16 @@ def get_all_usernames():
     return [user["username"] for user in usernames]
 
 
+def get_password_by_username(username):
+    account = accounts_collection.find_one({"username": username}, {"password": 1})
+
+    if account:
+        return account.get("password")
+    else:
+        print_error(f"Username '{username}' not found.")
+        return None
+
+
 def get_all_usernames_and_passwords():
     users = list(accounts_collection.find({}, {"_id": 0, "username": 1, "password": 1}))
 
@@ -196,3 +207,35 @@ def get_all_usernames_and_passwords():
     return [
         {"username": user["username"], "password": user["password"]} for user in users
     ]
+
+
+def add_reel_to_user(username, reel_code):
+    # Check if the username exists in the accounts collection
+    account = accounts_collection.find_one({"username": username})
+
+    if not account:
+        print_error(f"Username '{username}' not found.")
+        return
+
+    # Add the reel_code to the posted_reels collection
+    posted_reels_collection.insert_one({"username": username, "reel_code": reel_code})
+
+    # Update the accounts collection to add the reel_code to the user's reel_codes array
+    accounts_collection.update_one(
+        {"username": username},
+        {"$addToSet": {"reel_codes": reel_code}},  # $addToSet prevents duplicates
+    )
+
+    print_success(f"Reel '{reel_code}' added to '{username}' successfully.")
+
+
+def is_reel_posted_by_user(username, reel_code):
+    # Check if the username exists in the accounts collection
+    account = accounts_collection.find_one(
+        {"username": username, "reel_codes": reel_code}
+    )
+
+    if account:
+        return True
+    else:
+        return False
