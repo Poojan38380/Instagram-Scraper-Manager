@@ -7,13 +7,16 @@ from utils import (
     get_user_input,
 )
 
-
 accounts_collection = db.accounts
 posted_reels_collection = db.posted_reels
 
 
 def select_account_action(action_message):
-    accounts = list(accounts_collection.find({}, {"username": 1}))
+    try:
+        accounts = list(accounts_collection.find({}, {"username": 1}))
+    except Exception as e:
+        print_error(f"Failed to retrieve accounts: {e}")
+        return None
 
     if not accounts:
         print_error("No accounts found in the database.")
@@ -36,25 +39,34 @@ def select_account_action(action_message):
 
 def add_new_account():
     print_header("Create a new account")
-    USERNAME = get_user_input("Enter username: ")
-    PASSWORD = get_user_input("Enter password: ")
+    username = get_user_input("Enter username: ")
+    password = get_user_input("Enter password: ")
 
-    if not USERNAME or not PASSWORD:
+    if not username or not password:
         print_error("Username and password cannot be empty.")
         return
 
-    if accounts_collection.find_one({"username": USERNAME}):
-        print_error(
-            f"Username '{USERNAME}' already exists. Please choose a different one."
-        )
+    try:
+        if accounts_collection.find_one({"username": username}):
+            print_error(
+                f"Username '{username}' already exists. Please choose a different one."
+            )
+            return
+    except Exception as e:
+        print_error(f"Failed to check for existing username: {e}")
         return
-    api = login(USERNAME, PASSWORD)
+
+    api = login(username, password)
 
     if api is None:
         print_error("Failed to login. Check your credentials and try again.")
         return
-    accounts_collection.insert_one({"username": USERNAME, "password": PASSWORD})
-    print_success(f"Account for '{USERNAME}' added successfully.")
+
+    try:
+        accounts_collection.insert_one({"username": username, "password": password})
+        print_success(f"Account for '{username}' added successfully.")
+    except Exception as e:
+        print_error(f"Failed to add account: {e}")
 
 
 def add_scraping_accounts():
@@ -65,6 +77,11 @@ def add_scraping_accounts():
         return
 
     existing_account = accounts_collection.find_one({"username": selected_username})
+
+    if not existing_account:
+        print_error(f"Account '{selected_username}' not found.")
+        return
+
     existing_scraping_accounts = existing_account.get("scraping_accounts", [])
 
     scraping_accounts_input = get_user_input(
@@ -84,26 +101,28 @@ def add_scraping_accounts():
         print_error("No new scraping accounts to add.")
         return
 
-    updated_scraping_accounts = existing_scraping_accounts + new_scraping_accounts
-    accounts_collection.update_one(
-        {"username": selected_username},
-        {"$set": {"scraping_accounts": updated_scraping_accounts}},
-    )
-
-    print_success(f"Scraping accounts added to '{selected_username}' successfully.")
-
-    # Show the updated list of scraping accounts
-    view_scraping_accounts_by_username(selected_username)
+    try:
+        accounts_collection.update_one(
+            {"username": selected_username},
+            {
+                "$set": {
+                    "scraping_accounts": existing_scraping_accounts
+                    + new_scraping_accounts
+                }
+            },
+        )
+        print_success(f"Scraping accounts added to '{selected_username}' successfully.")
+        view_scraping_accounts_by_username(selected_username)
+    except Exception as e:
+        print_error(f"Failed to update scraping accounts: {e}")
 
 
 def view_scraping_accounts():
     selected_username = select_account_action(
         "Select an account to view its scraping accounts:"
     )
-    if not selected_username:
-        return
-
-    view_scraping_accounts_by_username(selected_username)
+    if selected_username:
+        view_scraping_accounts_by_username(selected_username)
 
 
 def remove_scraping_account():
@@ -113,9 +132,11 @@ def remove_scraping_account():
     if not selected_username:
         return
 
-    account_data = accounts_collection.find_one(
-        {"username": selected_username}, {"scraping_accounts": 1}
-    )
+    account_data = accounts_collection.find_one({"username": selected_username})
+    if not account_data:
+        print_error(f"Account '{selected_username}' not found.")
+        return
+
     scraping_accounts = account_data.get("scraping_accounts", [])
 
     if not scraping_accounts:
@@ -144,18 +165,23 @@ def remove_scraping_account():
             print_success(
                 f"Scraping account '{scrape_to_remove}' removed from '{selected_username}' successfully."
             )
-
             view_scraping_accounts_by_username(selected_username)
         else:
             print_error("Invalid selection. Please choose a valid number.")
     except ValueError:
         print_error("Please enter a valid number.")
+    except Exception as e:
+        print_error(f"Failed to update scraping accounts: {e}")
 
 
 def view_scraping_accounts_by_username(selected_username):
-    account_data = accounts_collection.find_one(
-        {"username": selected_username}, {"scraping_accounts": 1}
-    )
+
+    account_data = accounts_collection.find_one({"username": selected_username})
+
+    if not account_data:
+        print_error(f"Account '{selected_username}' not found.")
+        return
+
     scraping_accounts = account_data.get("scraping_accounts", [])
 
     if scraping_accounts:
@@ -167,18 +193,21 @@ def view_scraping_accounts_by_username(selected_username):
 
 
 def get_scraping_accounts(selected_username):
+    account_data = accounts_collection.find_one({"username": selected_username})
 
-    account_data = accounts_collection.find_one(
-        {"username": selected_username}, {"scraping_accounts": 1}
-    )
+    if not account_data:
+        print_error(f"Account '{selected_username}' not found.")
+        return []
 
-    scraping_accounts = account_data.get("scraping_accounts", [])
-
-    return scraping_accounts
+    return account_data.get("scraping_accounts", [])
 
 
 def get_all_usernames():
-    usernames = list(accounts_collection.find({}, {"_id": 0, "username": 1}))
+    try:
+        usernames = list(accounts_collection.find({}, {"_id": 0, "username": 1}))
+    except Exception as e:
+        print_error(f"Failed to retrieve usernames: {e}")
+        return []
 
     if not usernames:
         print_error("No accounts found in the database.")
@@ -188,7 +217,11 @@ def get_all_usernames():
 
 
 def get_password_by_username(username):
-    account = accounts_collection.find_one({"username": username}, {"password": 1})
+    try:
+        account = accounts_collection.find_one({"username": username}, {"password": 1})
+    except Exception as e:
+        print_error(f"Failed to retrieve password: {e}")
+        return None
 
     if account:
         return account.get("password")
@@ -198,7 +231,13 @@ def get_password_by_username(username):
 
 
 def get_all_usernames_and_passwords():
-    users = list(accounts_collection.find({}, {"_id": 0, "username": 1, "password": 1}))
+    try:
+        users = list(
+            accounts_collection.find({}, {"_id": 0, "username": 1, "password": 1})
+        )
+    except Exception as e:
+        print_error(f"Failed to retrieve users: {e}")
+        return []
 
     if not users:
         print_error("No accounts found in the database.")
@@ -210,32 +249,35 @@ def get_all_usernames_and_passwords():
 
 
 def add_reel_to_user(username, reel_code):
-    # Check if the username exists in the accounts collection
-    account = accounts_collection.find_one({"username": username})
+    try:
+        account = accounts_collection.find_one({"username": username})
+    except Exception as e:
+        print_error(f"Failed to retrieve account: {e}")
+        return
 
     if not account:
         print_error(f"Username '{username}' not found.")
         return
 
-    # Add the reel_code to the posted_reels collection
-    posted_reels_collection.insert_one({"username": username, "reel_code": reel_code})
-
-    # Update the accounts collection to add the reel_code to the user's reel_codes array
-    accounts_collection.update_one(
-        {"username": username},
-        {"$addToSet": {"reel_codes": reel_code}},  # $addToSet prevents duplicates
-    )
-
-    print_success(f"Reel '{reel_code}' added to '{username}' successfully.")
+    try:
+        posted_reels_collection.insert_one(
+            {"username": username, "reel_code": reel_code}
+        )
+        accounts_collection.update_one(
+            {"username": username},
+            {"$addToSet": {"reel_codes": reel_code}},  # $addToSet prevents duplicates
+        )
+        print_success(f"Reel '{reel_code}' added to '{username}' successfully.")
+    except Exception as e:
+        print_error(f"Failed to add reel: {e}")
 
 
 def is_reel_posted_by_user(username, reel_code):
-    # Check if the username exists in the accounts collection
-    account = accounts_collection.find_one(
-        {"username": username, "reel_codes": reel_code}
-    )
-
-    if account:
-        return True
-    else:
+    try:
+        account = accounts_collection.find_one(
+            {"username": username, "reel_codes": reel_code}
+        )
+        return account is not None
+    except Exception as e:
+        print_error(f"Failed to check reel posting: {e}")
         return False

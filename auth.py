@@ -28,9 +28,12 @@ def save_api_client(api: Client, username: str) -> None:
     """
     api_storage_file = f"loginInfo/{username}/api_client.pkl"
     ensure_directory_exists(api_storage_file)
-    with open(api_storage_file, "wb") as file:
-        pickle.dump(api, file)
-    print_success(f"API client for {username} saved to local storage.")
+    try:
+        with open(api_storage_file, "wb") as file:
+            pickle.dump(api, file)
+        print_success(f"API client for {username} saved to local storage.")
+    except Exception as e:
+        print_error(f"Failed to save API client for {username}: {str(e)}")
 
 
 def load_api_client(username: str) -> Client:
@@ -45,10 +48,13 @@ def load_api_client(username: str) -> Client:
     """
     api_storage_file = f"loginInfo/{username}/api_client.pkl"
     if os.path.exists(api_storage_file):
-        with open(api_storage_file, "rb") as file:
-            print_success(f"API client for {username} loaded from local storage.")
-            return pickle.load(file)
-    return None
+        try:
+            with open(api_storage_file, "rb") as file:
+                print_success(f"API client for {username} loaded from local storage.")
+                return pickle.load(file)
+        except Exception as e:
+            print_error(f"Failed to load API client for {username}: {str(e)}")
+    return None  # type: ignore
 
 
 def login(username: str, password: str) -> Client:
@@ -77,12 +83,12 @@ def login(username: str, password: str) -> Client:
 
         if os.path.exists(session_file):
             print_header("Logging in with previous session...")
-            api.load_settings(session_file)
+            api.load_settings(session_file)  # type: ignore
             api.login(username, password)
         else:
             print_header("Logging in with username and password...")
             api.login(username, password)
-            api.dump_settings(session_file)
+            api.dump_settings(session_file)  # type: ignore
 
         # Verify login by fetching timeline feed
         api.get_timeline_feed()
@@ -94,7 +100,6 @@ def login(username: str, password: str) -> Client:
         return api
 
     except Exception as e:
-        print_error(f"An error occurred during login: {str(e)}")
         if "login_required" in str(e):
             print_error("Login failed. Please check your username and password.")
         elif "challenge_required" in str(e):
@@ -102,7 +107,5 @@ def login(username: str, password: str) -> Client:
                 "Instagram has flagged this login attempt. Please check your account for security challenges."
             )
         else:
-            print_error(
-                "An unexpected error occurred. Please check the details and try again."
-            )
+            print_error(f"An unexpected error occurred during login: {str(e)}")
         raise e  # Re-raise the exception for further handling if needed
