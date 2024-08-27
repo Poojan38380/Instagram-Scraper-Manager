@@ -1,6 +1,4 @@
-from pymongo import MongoClient
-from dotenv import load_dotenv
-import os
+from mongo import db
 from utils import (
     print_header,
     print_error,
@@ -9,13 +7,6 @@ from utils import (
 )
 
 
-# Load environment variables from .env file
-load_dotenv()
-
-# MongoDB Atlas connection
-MONGO_URI = os.getenv("MONGO_URI")
-client = MongoClient(MONGO_URI)
-db = client.instaposter
 accounts_collection = db.accounts
 
 
@@ -167,3 +158,36 @@ def view_scraping_accounts_by_username(selected_username):
             print(f"{index}. {scrape_account}")
     else:
         print_error(f"No scraping accounts found for '{selected_username}'.")
+
+
+def get_scraping_accounts(selected_username):
+
+    account_data = accounts_collection.find_one(
+        {"username": selected_username}, {"scraping_accounts": 1}
+    )
+
+    scraping_accounts = account_data.get("scraping_accounts", [])
+
+    return scraping_accounts
+
+
+def get_all_usernames():
+    usernames = list(accounts_collection.find({}, {"_id": 0, "username": 1}))
+
+    if not usernames:
+        print_error("No accounts found in the database.")
+        return []
+
+    return [user["username"] for user in usernames]
+
+
+def get_all_usernames_and_passwords():
+    users = list(accounts_collection.find({}, {"_id": 0, "username": 1, "password": 1}))
+
+    if not users:
+        print_error("No accounts found in the database.")
+        return []
+
+    return [
+        {"username": user["username"], "password": user["password"]} for user in users
+    ]

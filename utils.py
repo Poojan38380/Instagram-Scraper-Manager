@@ -1,5 +1,7 @@
 from colorama import init, Fore, Style
 import sys
+import random
+
 
 # Initialize colorama
 init(autoreset=True)
@@ -26,3 +28,9 @@ def wait_for_enter():
     if user_input != "":
         print_error("Exiting as user pressed a key other than Enter.")
         sys.exit(0)
+
+
+def get_random_member(array):
+    if not array:
+        return None  # Return None if the array is empty
+    return random.choice(array)
