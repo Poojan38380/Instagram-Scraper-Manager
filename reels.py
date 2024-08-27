@@ -1,17 +1,30 @@
-from utils import check_array_and_proceed
+import instaloader
+import requests
+import os
+
+# Create an instance of Instaloader
+L = instaloader.Instaloader()
 
 
-def get_all_reels(account, api, FETCH_LIMIT):
-    user_id = api.user_id_from_username(account)
-    medias = api.user_medias(user_id, FETCH_LIMIT)
-    reels = [
-        item for item in medias if (item.product_type == "clips", item.media_type == 2)
-    ]  # Filter for reels (product_type == 3)
-    return reels
+def save_reels(username, account_to_scrape):
+    # Load the profile
+    profile = instaloader.Profile.from_username(L.context, account_to_scrape)
 
+    # Create the directory if it doesn't exist
+    os.makedirs(f"reels/{username}", exist_ok=True)
 
-def get_reel(account, api):
-    reels = get_all_reels(account, api, 1)
-    if not check_array_and_proceed(reels, f"reels for account : {account}"):
-        return
-    return reels
+    # Iterate over the posts
+    for post in profile.get_posts():
+        # Check if the post is a Reel (video)
+        if post.typename == "GraphVideo" and post.is_video and post.video_url:
+            print(f"Downloading Reel: {post.shortcode}")
+            video_url = post.video_url
+            video_data = requests.get(video_url).content
+            with open(f"reels/{username}/{post.shortcode}.mp4", "wb") as video_file:
+                video_file.write(video_data)
+            print(
+                f"Reel {post.shortcode} downloaded successfully as {post.shortcode}.mp4"
+            )
+            break
+        else:
+            print(f"Skipping post: {post.shortcode}")

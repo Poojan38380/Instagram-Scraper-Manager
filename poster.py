@@ -21,7 +21,5 @@ def post_reel_to_all_accounts():
 
         api = login(USERNAME, PASSWORD)
 
-        print(get_reel(account_to_scrape, api))
-
 
 post_reel_to_all_accounts()
