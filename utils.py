@@ -34,3 +34,10 @@ def get_random_member(array):
     if not array:
         return None  # Return None if the array is empty
     return random.choice(array)
+
+
+def check_array_and_proceed(array, array_name="Array"):
+    if not array:
+        print(f"{array_name} is empty.")
+        return False
+    return True
