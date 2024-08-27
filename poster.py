@@ -1,6 +1,7 @@
 from accounts import get_all_usernames_and_passwords, get_scraping_accounts
 from utils import get_random_member, check_array_and_proceed
 from auth import login
+from reels import get_reel
 
 
 def post_reel_to_all_accounts():
@@ -15,10 +16,12 @@ def post_reel_to_all_accounts():
         if not check_array_and_proceed(
             scraping_accounts, f"scraping_accounts for {USERNAME} "
         ):
-            return
+            continue
         account_to_scrape = get_random_member(scraping_accounts)
 
         api = login(USERNAME, PASSWORD)
+
+        print(get_reel(account_to_scrape, api))
 
 
 post_reel_to_all_accounts()

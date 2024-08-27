@@ -1,4 +1,5 @@
 from mongo import db
+from auth import login
 from utils import (
     print_header,
     print_error,
@@ -34,21 +35,25 @@ def select_account_action(action_message):
 
 def add_new_account():
     print_header("Create a new account")
-    username = get_user_input("Enter username: ")
-    password = get_user_input("Enter password: ")
+    USERNAME = get_user_input("Enter username: ")
+    PASSWORD = get_user_input("Enter password: ")
 
-    if not username or not password:
+    if not USERNAME or not PASSWORD:
         print_error("Username and password cannot be empty.")
         return
 
-    if accounts_collection.find_one({"username": username}):
+    if accounts_collection.find_one({"username": USERNAME}):
         print_error(
-            f"Username '{username}' already exists. Please choose a different one."
+            f"Username '{USERNAME}' already exists. Please choose a different one."
         )
         return
+    api = login(USERNAME, PASSWORD)
 
-    accounts_collection.insert_one({"username": username, "password": password})
-    print_success(f"Account for '{username}' added successfully.")
+    if api is None:
+        print_error("Failed to login. Check your credentials and try again.")
+        return
+    accounts_collection.insert_one({"username": USERNAME, "password": PASSWORD})
+    print_success(f"Account for '{USERNAME}' added successfully.")
 
 
 def add_scraping_accounts():
