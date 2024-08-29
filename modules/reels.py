@@ -1,5 +1,7 @@
 import instaloader
 import requests
+import os
+
 from pathlib import Path
 from modules.accounts import (
     is_reel_posted_by_user,
@@ -16,6 +18,7 @@ from modules.utils import (
     get_random_member,
 )
 from modules.captions import get_random_caption
+from modules.story import post_to_story
 
 # Create an instance of Instaloader
 L = instaloader.Instaloader()
@@ -84,7 +87,7 @@ def post_reel(username, api):
             api.delay_range = [1, 3]
 
             # Perform the upload using the file path directly
-            api.clip_upload(
+            media = api.clip_upload(
                 path=str(reel_path),
                 caption=get_random_caption(),
             )
@@ -92,10 +95,8 @@ def post_reel(username, api):
             print_success(f"Successfully posted reel for {username}")
             add_reel_to_user(username, reel_code)
 
-            thumbnail_path = reel_folder_path / f"{reel_code}.mp4.jpg"
-
-            # Delete the files
-            delete_file(thumbnail_path)
+            print(f"Initializing posting story...")
+            post_to_story(api, media, reel_path, username, reel_folder_path)
 
             # Exit after posting one reel
             break
@@ -104,7 +105,10 @@ def post_reel(username, api):
         if "feedback_required" in str(e):
             print_error(f"Instagram rate limit hit for {username}.")
             add_reel_to_user(username, reel_code)
-            thumbnail_path = reel_folder_path / f"{reel_code}.mp4.jpg"
-            delete_file(thumbnail_path)
+
         else:
             print_error(f"Failed to post reel for {username}: {str(e)}")
+    finally:
+        # Clean up the uploaded video file if it exists
+        thumbnail_path = reel_folder_path / f"{reel_code}.mp4.jpg"
+        delete_file(thumbnail_path)

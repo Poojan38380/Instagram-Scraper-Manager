@@ -8,6 +8,7 @@ finalData
 loginInfo
 tempImage
 reels
+.cph
 ./idea
 *.json
 # C extensions
