@@ -1,13 +1,13 @@
 import instaloader
 import requests
 from pathlib import Path
-from accounts import (
+from modules.accounts import (
     is_reel_posted_by_user,
     add_reel_to_user,
     remove_scraping_account_by_username,
     get_scraping_accounts,
 )
-from utils import (
+from modules.utils import (
     delete_file,
     print_header,
     print_error,
@@ -15,7 +15,7 @@ from utils import (
     check_array_and_proceed,
     get_random_member,
 )
-from captions import get_random_caption
+from modules.captions import get_random_caption
 
 # Create an instance of Instaloader
 L = instaloader.Instaloader()

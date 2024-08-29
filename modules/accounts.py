@@ -1,6 +1,6 @@
-from mongo import db
-from auth import login
-from utils import (
+from modules.mongo import db
+from modules.auth import login
+from modules.utils import (
     print_header,
     print_error,
     print_success,

@@ -1,18 +1,18 @@
-from accounts import (
+from modules.accounts import (
     get_all_usernames_and_passwords,
     get_scraping_accounts,
     get_password_by_username,
     select_account_action,
 )
-from utils import (
+from modules.utils import (
     get_random_member,
     check_array_and_proceed,
     print_header,
     print_error,
     print_success,
 )
-from auth import login
-from reels import save_reel, post_reel
+from modules.auth import login
+from modules.reels import save_reel, post_reel
 import schedule
 import time
 

@@ -5,7 +5,7 @@ Client.delay_range = [1, 3]
 
 import os
 import pickle
-from utils import print_header, print_error, print_success
+from modules.utils import print_header, print_error, print_success
 
 
 def ensure_directory_exists(filepath: str) -> None:
