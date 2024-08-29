@@ -1,15 +1,19 @@
-import os
-import time
 import instaloader
 import requests
 from pathlib import Path
-from accounts import is_reel_posted_by_user, add_reel_to_user
+from accounts import (
+    is_reel_posted_by_user,
+    add_reel_to_user,
+    remove_scraping_account_by_username,
+    get_scraping_accounts,
+)
 from utils import (
     delete_file,
     print_header,
     print_error,
     print_success,
     check_array_and_proceed,
+    get_random_member,
 )
 from captions import get_random_caption
 
@@ -24,8 +28,12 @@ def save_reel(username, account_to_scrape):
         reel_directory = Path(f"reels/{username}")
         reel_directory.mkdir(parents=True, exist_ok=True)
 
+        reel_found = False  # To check if any reel is found
+
         for post in profile.get_posts():
             if post.typename == "GraphVideo" and post.is_video and post.video_url:
+                reel_found = True
+
                 if is_reel_posted_by_user(username, post.shortcode):
                     print(f"Reel {post.shortcode} has already been posted.")
                     continue
@@ -41,7 +49,16 @@ def save_reel(username, account_to_scrape):
                     print_error(f"Failed to download reel {post.shortcode}: {str(e)}")
                 break
             else:
-                print_error(f"Skipping post: {post.shortcode}")
+                print(f"Skipping post: {post.shortcode}")
+
+        if not reel_found:
+            print_error(
+                f"No reels found from the account: {account_to_scrape}. Removing it from scraping accounts from {username}."
+            )
+            remove_scraping_account_by_username(username, account_to_scrape)
+            print(f"Retrying with a new scraping account for user: {username}")
+            save_reel(username, get_random_member(get_scraping_accounts(username)))
+
     except instaloader.exceptions.InstaloaderException as e:
         print_error(f"Failed to load profile {account_to_scrape}: {str(e)}")
 

@@ -174,6 +174,46 @@ def remove_scraping_account():
         print_error(f"Failed to update scraping accounts: {e}")
 
 
+def remove_scraping_account_by_username(username, scraping_account_to_remove):
+    try:
+        # Retrieve the account data for the specified username
+        account_data = accounts_collection.find_one({"username": username})
+
+        if not account_data:
+            print_error(f"Account '{username}' not found.")
+            return False
+
+        # Get the list of scraping accounts for the user
+        scraping_accounts = account_data.get("scraping_accounts", [])
+
+        if scraping_account_to_remove not in scraping_accounts:
+            print_error(
+                f"Scraping account '{scraping_account_to_remove}' not found for '{username}'."
+            )
+            return False
+
+        # Update the scraping accounts list by removing the specified account
+        updated_scraping_accounts = [
+            account
+            for account in scraping_accounts
+            if account != scraping_account_to_remove
+        ]
+
+        # Update the user's scraping accounts in the database
+        accounts_collection.update_one(
+            {"username": username},
+            {"$set": {"scraping_accounts": updated_scraping_accounts}},
+        )
+
+        print_success(
+            f"Scraping account '{scraping_account_to_remove}' removed from '{username}' successfully."
+        )
+        return True
+    except Exception as e:
+        print_error(f"Failed to remove scraping account: {e}")
+        return False
+
+
 def view_scraping_accounts_by_username(selected_username):
 
     account_data = accounts_collection.find_one({"username": selected_username})

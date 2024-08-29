@@ -1,9 +1,9 @@
-from poster import (
+from modules.poster import (
     post_reel_to_all_accounts,
     post_reel_single_account,
     posting_strategy_1,
 )
-from utils import (
+from modules.utils import (
     print_header,
     print_error,
     get_user_input,

@@ -1,12 +1,12 @@
 import sys
-from accounts import (
+from modules.accounts import (
     add_new_account,
     add_scraping_accounts,
     view_scraping_accounts,
     remove_scraping_account,
 )
 
-from utils import (
+from modules.utils import (
     print_header,
     print_error,
     get_user_input,
