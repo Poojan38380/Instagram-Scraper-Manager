@@ -1,7 +1,5 @@
 import instaloader
 import requests
-import os
-
 from pathlib import Path
 from modules.accounts import (
     is_reel_posted_by_user,

@@ -97,5 +97,5 @@ def post_to_story(api, media, media_path, username, download_dir):
         # Clean up the trimmed video file if it exists
         if media_path and os.path.exists(media_path):
             delete_file(media_path)
-            thumbnail_path = f"{media_path}.jpg"
-            delete_file(thumbnail_path)
+            story_thumbnail_path = f"{media_path}.jpg"
+            delete_file(story_thumbnail_path)
