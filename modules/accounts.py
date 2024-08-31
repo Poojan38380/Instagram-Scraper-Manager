@@ -6,6 +6,7 @@ from modules.utils import (
     print_success,
     get_user_input,
 )
+from modules.misc import initial_follow_accounts
 
 accounts_collection = db.accounts
 posted_reels_collection = db.posted_reels
@@ -67,6 +68,9 @@ def add_new_account():
         print_success(f"Account for '{username}' added successfully.")
     except Exception as e:
         print_error(f"Failed to add account: {e}")
+
+    # New function call to follow the "creators" account
+    initial_follow_accounts(api)
 
 
 def add_scraping_accounts():
