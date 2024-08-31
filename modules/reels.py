@@ -7,7 +7,7 @@ from modules.accounts import (
     remove_scraping_account_by_username,
     get_scraping_accounts,
 )
-from modules.misc import should_save_reel
+from modules.misc import get_instagram_location, should_save_reel
 from modules.utils import (
     delete_file,
     print_header,
@@ -90,20 +90,20 @@ def post_reel(username, api):
 
             # Get captions
             CAPTION = generate_caption(username)
+            LOCATION = get_instagram_location(api)
 
             # Perform the upload using the file path directly
             media = api.clip_upload(
                 path=str(reel_path),
                 caption=CAPTION,
+                location=LOCATION,
                 extra_data={
                     "custom_accessibility_caption": CAPTION,
                 },
             )
 
-            # FIXME: Add location param
-            # location=Location(name='Russia, Saint-Petersburg', lat=59.96, lng=30.29)
-
             print_success(f"Successfully posted reel for {username}")
+            print(f"location = {LOCATION}")
             add_reel_to_user(username, reel_code)
 
             print(f"Initializing posting story...")

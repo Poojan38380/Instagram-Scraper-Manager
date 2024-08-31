@@ -2,7 +2,7 @@ import pandas as pd
 from instagrapi import Client
 import matplotlib.pyplot as plt
 
-ACCOUNTS = ["itz.yoursome"]
+ACCOUNTS = ["divinereels.pull"]
 REELS_TO_FETCH = 10
 
 
