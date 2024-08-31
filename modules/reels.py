@@ -7,6 +7,7 @@ from modules.accounts import (
     remove_scraping_account_by_username,
     get_scraping_accounts,
 )
+from modules.misc import should_save_reel
 from modules.utils import (
     delete_file,
     print_header,
@@ -38,6 +39,9 @@ def save_reel(username, account_to_scrape):
                 if is_reel_posted_by_user(username, post.shortcode):
                     print(f"Reel {post.shortcode} has already been posted.")
                     continue
+                # Added a feature to filter out posts that have certain view_count threshold
+                # if not should_save_reel(post):
+                #     continue
 
                 print_success(f"\nDownloading Reel: {post.shortcode}")
                 try:
