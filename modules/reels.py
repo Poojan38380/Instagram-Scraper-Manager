@@ -83,12 +83,18 @@ def post_reel(username, api):
                 continue
 
             api.delay_range = [1, 3]
-
+            CAPTION = get_random_caption()
             # Perform the upload using the file path directly
             media = api.clip_upload(
                 path=str(reel_path),
-                caption=get_random_caption(),
+                caption=CAPTION,
+                extra_data={
+                    "custom_accessibility_caption": CAPTION,
+                },
             )
+
+            # FIXME: Add location param
+            # location=Location(name='Russia, Saint-Petersburg', lat=59.96, lng=30.29)
 
             print_success(f"Successfully posted reel for {username}")
             add_reel_to_user(username, reel_code)
