@@ -3,6 +3,7 @@ from modules.accounts import (
     get_scraping_accounts,
     get_password_by_username,
     select_account_action,
+    select_multiple_account_action,
 )
 from modules.utils import (
     get_random_member,
@@ -91,6 +92,45 @@ def post_reel_single_account():
 
     except Exception as e:
         print_error(f"Failed to post reel for single account: {str(e)}")
+
+
+def post_reel_multiple_accounts():
+    print_header("Starting to post reels for selected accounts")
+
+    try:
+        usernames = select_multiple_account_action("Select accounts to post reels")
+        if not usernames:
+            print_error("No accounts selected")
+            return
+
+        for username in usernames:
+            password = get_password_by_username(username)
+            if not password:
+                print_error(f"No password found for username: {username}")
+                continue
+
+            scraping_accounts = get_scraping_accounts(username)
+            if not check_array_and_proceed(
+                scraping_accounts, f"Scraping accounts for {username}"
+            ):
+                continue
+
+            account_to_scrape = get_random_member(scraping_accounts)
+            if account_to_scrape is None:
+                print_error(f"No valid scraping account found for {username}")
+                continue
+
+            api = login(username, password)
+            if api is None:
+                print_error(f"Failed to login for {username}")
+                continue
+
+            save_reel(username, account_to_scrape)
+            post_reel(username, api)
+            print_success(f"Reel posted successfully for {username}")
+
+    except Exception as e:
+        print_error(f"Failed to post reels for selected accounts: {str(e)}")
 
 
 def posting_strategy_1():

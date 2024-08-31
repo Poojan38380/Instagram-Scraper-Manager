@@ -38,6 +38,43 @@ def select_account_action(action_message):
     return None
 
 
+def select_multiple_account_action(action_message):
+    try:
+        accounts = list(accounts_collection.find({}, {"username": 1}))
+    except Exception as e:
+        print_error(f"Failed to retrieve accounts: {e}")
+        return None
+
+    if not accounts:
+        print_error("No accounts found in the database.")
+        return None
+
+    print_header(action_message)
+    for index, account in enumerate(accounts, start=1):
+        print(f"{index}. {account['username']}")
+
+    try:
+        choices = get_user_input("Enter the account numbers separated by commas: ")
+        choice_list = [int(choice.strip()) for choice in choices.split(",")]
+
+        selected_accounts = []
+        for choice in choice_list:
+            if 1 <= choice <= len(accounts):
+                selected_accounts.append(accounts[choice - 1]["username"])
+            else:
+                print_error(f"Invalid selection: {choice}. Skipping.")
+
+        if selected_accounts:
+            return selected_accounts
+        else:
+            print_error("No valid accounts selected.")
+            return None
+
+    except ValueError:
+        print_error("Please enter valid numbers separated by commas.")
+        return None
+
+
 def add_new_account():
     print_header("Create a new account")
     username = get_user_input("Enter username: ")

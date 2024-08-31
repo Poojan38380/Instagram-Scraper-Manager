@@ -103,7 +103,6 @@ def post_reel(username, api):
             )
 
             print_success(f"Successfully posted reel for {username}")
-            print(f"location = {LOCATION}")
             add_reel_to_user(username, reel_code)
 
             print(f"Initializing posting story...")
