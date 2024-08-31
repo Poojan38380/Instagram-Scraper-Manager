@@ -325,3 +325,60 @@ def is_reel_posted_by_user(username, reel_code):
     except Exception as e:
         print_error(f"Failed to check reel posting: {e}")
         return False
+
+
+def add_caption_to_account():
+    selected_username = select_account_action("Select an account to add caption text:")
+    if not selected_username:
+        return
+
+    caption_text = get_user_input("Enter caption text: ")
+    if not caption_text:
+        print_error("Caption text cannot be empty.")
+        return
+
+    try:
+        # Update the caption text in the user's document
+        accounts_collection.update_one(
+            {"username": selected_username},
+            {
+                "$set": {"caption": caption_text}
+            },  # Using $set to replace the caption field
+        )
+        print_success(f"Caption added to '{selected_username}' successfully.")
+        view_caption_by_username(selected_username)
+    except Exception as e:
+        print_error(f"Failed to add caption: {e}")
+
+
+def view_caption_by_username(selected_username):
+    account_data = accounts_collection.find_one({"username": selected_username})
+
+    if not account_data:
+        print_error(f"Account '{selected_username}' not found.")
+        return
+
+    caption = account_data.get("caption", "")
+
+    if caption:
+        print_header(f"Caption for '{selected_username}':")
+        print(caption)
+    else:
+        print_error(f"No caption found for '{selected_username}'.")
+
+
+def get_caption_by_username(username):
+    try:
+        account_data = accounts_collection.find_one({"username": username})
+
+        if not account_data:
+            print_error(f"Account '{username}' not found.")
+            return ""
+
+        caption = account_data.get("caption", "")
+
+        return caption
+
+    except Exception as e:
+        print_error(f"Failed to retrieve caption for '{username}': {e}")
+        return ""

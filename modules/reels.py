@@ -16,7 +16,7 @@ from modules.utils import (
     check_array_and_proceed,
     get_random_member,
 )
-from modules.captions import get_random_caption
+from modules.captions import generate_caption, get_random_caption
 from modules.story import post_to_story
 
 # Create an instance of Instaloader
@@ -87,7 +87,10 @@ def post_reel(username, api):
                 continue
 
             api.delay_range = [1, 3]
-            CAPTION = get_random_caption()
+
+            # Get captions
+            CAPTION = generate_caption(username)
+
             # Perform the upload using the file path directly
             media = api.clip_upload(
                 path=str(reel_path),
