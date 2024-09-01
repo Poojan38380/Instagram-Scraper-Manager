@@ -7,7 +7,7 @@ from modules.accounts import (
     remove_scraping_account_by_username,
     get_scraping_accounts,
 )
-from modules.misc import get_instagram_location, should_save_reel
+from modules.misc import get_instagram_location
 from modules.utils import (
     delete_file,
     print_header,
@@ -16,7 +16,7 @@ from modules.utils import (
     check_array_and_proceed,
     get_random_member,
 )
-from modules.captions import generate_caption, get_random_caption
+from modules.captions import generate_caption
 from modules.story import post_to_story
 
 # Create an instance of Instaloader

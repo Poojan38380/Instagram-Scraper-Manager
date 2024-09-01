@@ -1,6 +1,7 @@
 from modules.poster import (
     post_reel_multiple_accounts,
     post_reel_to_all_accounts,
+    single_account_flush,
     post_reel_single_account,
     posting_strategy_1,
 )
@@ -19,7 +20,8 @@ def main():
         2: post_reel_single_account,
         3: posting_strategy_1,
         4: post_reel_multiple_accounts,
-        5: sys.exit,
+        5: single_account_flush,
+        6: sys.exit,
     }
 
     while True:
@@ -29,7 +31,8 @@ def main():
         print("2. Post to single account")
         print("3. Post to all accounts, S1")
         print("4. Post to multiple accounts")
-        print("5. Exit")
+        print("5. Single account flush")
+        print("6. Exit")
 
         try:
             action = int(get_user_input("Choose an action: "))

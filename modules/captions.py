@@ -48,15 +48,21 @@ def generate_caption(username):
         if not random_caption:
             return None  # Early exit if random_caption failed
 
-        additional_string = """
+        additional_string = f"""
+.
+Follow @{username} for more daily content
+.
 All clips used belong to their rightful owners
-
+.
 DM @brainrot.network for credits
 
 video #fyp #trending #explore
 .
 .
 .
+.
+.
+
 """
 
         # Get user-specific caption

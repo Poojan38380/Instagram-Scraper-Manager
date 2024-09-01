@@ -151,3 +151,28 @@ def posting_strategy_1():
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+
+def single_account_flush():
+    print_header("Starting to post reel for a single account")
+
+    try:
+        username = select_account_action("Select an account to post reel")
+        if username is None:
+            print_error("No account selected")
+            return
+
+        password = get_password_by_username(username)
+        if not password:
+            print_error(f"No password found for username: {username}")
+            return
+
+        api = login(username, password)
+        if api is None:
+            print_error(f"Failed to login for {username}")
+            return
+
+        post_reel(username, api)
+
+    except Exception as e:
+        print_error(f"Failed to post reel for single account: {str(e)}")
