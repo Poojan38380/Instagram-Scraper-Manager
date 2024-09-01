@@ -134,10 +134,9 @@ def post_reel_multiple_accounts():
 
 
 def posting_strategy_1():
-    # Times converted to IST
-    first_time = "14:30"  # 2:30 PM IST
-    second_time = "20:30"  # 8:30 PM IST
-    third_time = "02:30"  # 2:30 AM IST (next day)
+    first_time = "07:00"  # Morning post at 7 AM
+    second_time = "12:30"  # Afternoon post at 12:30 PM
+    third_time = "19:00"  # Evening post at 7 PM
 
     # Scheduling the job to run at specified times
     schedule.every().day.at(first_time).do(post_reel_to_all_accounts)
@@ -145,7 +144,7 @@ def posting_strategy_1():
     schedule.every().day.at(third_time).do(post_reel_to_all_accounts)
 
     print_success(
-        f"Posting strategy set up. Reels will be posted at {first_time}, {second_time}, and {third_time} IST daily."
+        f"Posting strategy set up. Reels will be posted at {first_time}, {second_time}, and {third_time} local time daily."
     )
 
     # Keeping the script running to execute the scheduled tasks
