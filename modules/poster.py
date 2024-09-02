@@ -154,10 +154,10 @@ def posting_strategy_1():
 
 
 def single_account_flush():
-    print_header("Starting to post reel for a single account")
+    print_header("Flushing single account")
 
     try:
-        username = select_account_action("Select an account to post reel")
+        username = select_account_action("Select an account to flush")
         if username is None:
             print_error("No account selected")
             return
@@ -175,4 +175,32 @@ def single_account_flush():
         post_reel(username, api)
 
     except Exception as e:
-        print_error(f"Failed to post reel for single account: {str(e)}")
+        print_error(f"Failed to flush single account: {str(e)}")
+
+
+def all_accounts_flush():
+    print_header("Flushing all accounts")
+
+    try:
+        user_credentials = get_all_usernames_and_passwords()
+        if not check_array_and_proceed(user_credentials, "User credentials"):
+            return
+
+        for credentials in user_credentials:
+            username = credentials["username"]
+            password = credentials["password"]
+
+            try:
+
+                api = login(username, password)
+                if api is None:
+                    print_error(f"Failed to login for {username}")
+                    continue
+
+                post_reel(username, api)
+
+            except Exception as e:
+                print_error(f"Error processing credentials for {username}: {str(e)}")
+
+    except Exception as e:
+        print_error(f"Failed to process all accounts: {str(e)}")

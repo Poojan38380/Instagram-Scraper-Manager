@@ -4,6 +4,7 @@ from modules.poster import (
     single_account_flush,
     post_reel_single_account,
     posting_strategy_1,
+    all_accounts_flush,
 )
 from modules.utils import (
     print_header,
@@ -21,7 +22,8 @@ def main():
         3: posting_strategy_1,
         4: post_reel_multiple_accounts,
         5: single_account_flush,
-        6: sys.exit,
+        6: all_accounts_flush,
+        7: sys.exit,
     }
 
     while True:
@@ -32,7 +34,8 @@ def main():
         print("3. Post to all accounts, S1")
         print("4. Post to multiple accounts")
         print("5. Single account flush")
-        print("6. Exit")
+        print("6. All Account Flush")
+        print("7. Exit")
 
         try:
             action = int(get_user_input("Choose an action: "))
