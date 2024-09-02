@@ -58,13 +58,6 @@ DM @brainrot.network for credits
 
 video #fyp #trending #explorepage #nexusprivatelimitd @nexusprivatelimitd #ssl_media_ @ssl_media__
 
-
-.
-.
-.
-.
-.
-
 """
 
         # Get user-specific caption
