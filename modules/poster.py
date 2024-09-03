@@ -13,7 +13,7 @@ from modules.utils import (
     print_success,
 )
 from modules.auth import login
-from modules.reels import save_reel, post_reel
+from modules.reels import delete_reel, save_reel, post_reel
 import schedule
 import time
 
@@ -204,3 +204,29 @@ def all_accounts_flush():
 
     except Exception as e:
         print_error(f"Failed to process all accounts: {str(e)}")
+
+
+def delete_reel_for_selected_account():
+    print_header("Deleting reel for selected account")
+
+    try:
+        username = select_account_action("Select an account to delete reel")
+        if username is None:
+            print_error("No account selected")
+            return
+
+        password = get_password_by_username(username)
+        if not password:
+            print_error(f"No password found for username: {username}")
+            return
+
+        api = login(username, password)
+        if api is None:
+            print_error(f"Failed to login for {username}")
+            return
+
+        delete_reel(api)
+        print_success(f"Reel deleted successfully for {username}")
+
+    except Exception as e:
+        print_error(f"Failed to delete reel for selected account: {str(e)}")

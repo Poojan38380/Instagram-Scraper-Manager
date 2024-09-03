@@ -10,6 +10,7 @@ from modules.accounts import (
 from modules.misc import get_instagram_location
 from modules.utils import (
     delete_file,
+    get_user_input,
     print_header,
     print_error,
     print_success,
@@ -123,3 +124,37 @@ def post_reel(username, api):
         # Clean up the uploaded video file if it exists
         thumbnail_path = reel_folder_path / f"{reel_code}.mp4.jpg"
         delete_file(thumbnail_path)
+
+
+def delete_reel(api):
+    try:
+        # Get reel code from user input
+        reel_code = get_user_input("Enter the reel code")
+
+        if not reel_code:
+            print_error("Reel code cannot be empty.")
+            return
+
+        try:
+            # Convert reel code to media PK
+            reel_pk = api.media_pk_from_code(reel_code)
+        except Exception as e:
+            print_error(
+                f"Failed to retrieve media PK from reel code '{reel_code}': {str(e)}"
+            )
+            return
+
+        try:
+            # Attempt to delete the reel
+            api.media_delete(reel_pk)
+            print_success(f"Reel '{reel_code}' deleted successfully.")
+        except Exception as e:
+            if "feedback_required" in str(e):
+                print_error(
+                    f"Instagram rate limit hit. Unable to delete reel '{reel_code}' at this time."
+                )
+            else:
+                print_error(f"Failed to delete reel '{reel_code}': {str(e)}")
+
+    except Exception as e:
+        print_error(f"An unexpected error occurred: {str(e)}")
