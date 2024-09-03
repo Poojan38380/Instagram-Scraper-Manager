@@ -99,6 +99,7 @@ def post_reel(username, api):
                 location=LOCATION,
                 extra_data={
                     "custom_accessibility_caption": CAPTION,
+                    "like_and_view_counts_disabled": 1,
                 },
             )
 
