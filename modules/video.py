@@ -21,9 +21,9 @@ def add_margins_to_reel(
         new_height = video.h + 2 * margin_vertical
 
         # Create a color clip for the margin (e.g., white) with the same duration as the original video
-        margin_clip = ColorClip(
-            (new_width, new_height), color=(225, 225, 225)
-        ).set_duration(video.duration)
+        margin_clip = ColorClip((new_width, new_height), color=(0, 0, 0)).set_duration(
+            video.duration
+        )
 
         # Create an image for the text
         if top_text:
