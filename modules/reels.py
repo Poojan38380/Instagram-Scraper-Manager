@@ -19,6 +19,7 @@ from modules.utils import (
 )
 from modules.captions import generate_caption
 from modules.story import post_to_story
+from modules.video import add_margins_to_reel
 
 # Create an instance of Instaloader
 L = instaloader.Instaloader()
@@ -47,10 +48,11 @@ def save_reel(username, account_to_scrape):
                 print_success(f"\nDownloading Reel: {post.shortcode}")
                 try:
                     video_data = requests.get(post.video_url).content
-                    video_path = reel_directory / f"{post.shortcode}.mp4"
+                    video_path = reel_directory / f"{post.shortcode}_raw.mp4"
                     with open(video_path, "wb") as video_file:
                         video_file.write(video_data)
-                    print_success(f"Reel {post.shortcode} downloaded successfully.")
+                    print_success(f"Reel {post.shortcode}_raw downloaded successfully.")
+                    add_margins_to_reel(video_path)
                 except requests.RequestException as e:
                     print_error(f"Failed to download reel {post.shortcode}: {str(e)}")
                 break
@@ -100,7 +102,6 @@ def post_reel(username, api):
                 location=LOCATION,
                 extra_data={
                     "custom_accessibility_caption": CAPTION,
-                    "like_and_view_counts_disabled": 1,
                 },
             )
 
