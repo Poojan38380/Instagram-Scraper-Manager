@@ -2,6 +2,7 @@ import sys
 from modules.accounts import (
     add_new_account,
     add_scraping_accounts,
+    add_tagline_to_account,
     view_scraping_accounts,
     remove_scraping_account,
     add_caption_to_account,
@@ -22,7 +23,8 @@ def main():
         3: view_scraping_accounts,
         4: remove_scraping_account,
         5: add_caption_to_account,
-        6: sys.exit,
+        6: add_tagline_to_account,
+        7: sys.exit,
     }
 
     while True:
@@ -33,7 +35,8 @@ def main():
         print("3. View Scraping Accounts")
         print("4. Remove Scraping Account")
         print("5. Add Caption/Hastags to Account")
-        print("6. Exit")
+        print("6. Add Tagline to Account")
+        print("7. Exit")
 
         try:
             action = int(get_user_input("Choose an action: "))

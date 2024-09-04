@@ -419,3 +419,42 @@ def get_caption_by_username(username):
     except Exception as e:
         print_error(f"Failed to retrieve caption for '{username}': {e}")
         return ""
+
+
+def add_tagline_to_account():
+    selected_username = select_account_action("Select an account to add a tagline:")
+    if not selected_username:
+        return
+
+    tagline_text = get_user_input("Enter the tagline: ")
+    if not tagline_text:
+        print_error("Tagline cannot be empty.")
+        return
+
+    try:
+        # Update the tagline text in the user's document
+        accounts_collection.update_one(
+            {"username": selected_username},
+            {
+                "$set": {"tagline": tagline_text}
+            },  # Using $set to replace or add the tagline field
+        )
+        print_success(f"Tagline added to '{selected_username}' successfully.")
+        print(tagline_by_username(selected_username))
+    except Exception as e:
+        print_error(f"Failed to add tagline: {e}")
+
+
+def tagline_by_username(selected_username):
+    account_data = accounts_collection.find_one({"username": selected_username})
+
+    if not account_data:
+        print_error(f"Account '{selected_username}' not found.")
+        return
+
+    tagline = account_data.get("tagline", "")
+
+    if tagline:
+        return tagline
+    else:
+        return ""

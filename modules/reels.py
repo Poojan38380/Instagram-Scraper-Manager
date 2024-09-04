@@ -25,7 +25,7 @@ from modules.video import add_margins_to_reel
 L = instaloader.Instaloader()
 
 
-def save_reel(username, account_to_scrape):
+def save_reel(username, account_to_scrape, tagline=""):
     print_header(f"Saving reel for user: {username} from account: {account_to_scrape}")
     try:
         profile = instaloader.Profile.from_username(L.context, account_to_scrape)
@@ -52,7 +52,7 @@ def save_reel(username, account_to_scrape):
                     with open(video_path, "wb") as video_file:
                         video_file.write(video_data)
                     print_success(f"Reel {post.shortcode}_raw downloaded successfully.")
-                    add_margins_to_reel(video_path)
+                    add_margins_to_reel(video_path, top_text=tagline)
                 except requests.RequestException as e:
                     print_error(f"Failed to download reel {post.shortcode}: {str(e)}")
                 break

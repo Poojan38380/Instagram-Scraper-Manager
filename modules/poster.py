@@ -4,6 +4,7 @@ from modules.accounts import (
     get_password_by_username,
     select_account_action,
     select_multiple_account_action,
+    tagline_by_username,
 )
 from modules.utils import (
     get_random_member,
@@ -31,6 +32,8 @@ def post_reel_to_all_accounts():
             password = credentials["password"]
 
             try:
+                tagline = tagline_by_username(username)
+
                 scraping_accounts = get_scraping_accounts(username)
                 if not check_array_and_proceed(
                     scraping_accounts, f"Scraping accounts for {username}"
@@ -47,7 +50,7 @@ def post_reel_to_all_accounts():
                     print_error(f"Failed to login for {username}")
                     continue
 
-                save_reel(username, account_to_scrape)
+                save_reel(username, account_to_scrape, tagline)
                 post_reel(username, api)
 
             except Exception as e:
@@ -70,6 +73,7 @@ def post_reel_single_account():
         if not password:
             print_error(f"No password found for username: {username}")
             return
+        tagline = tagline_by_username(username)
 
         scraping_accounts = get_scraping_accounts(username)
         if not check_array_and_proceed(
@@ -87,7 +91,7 @@ def post_reel_single_account():
             print_error(f"Failed to login for {username}")
             return
 
-        save_reel(username, account_to_scrape)
+        save_reel(username, account_to_scrape, tagline)
         post_reel(username, api)
 
     except Exception as e:
@@ -105,6 +109,7 @@ def post_reel_multiple_accounts():
 
         for username in usernames:
             password = get_password_by_username(username)
+            tagline = tagline_by_username(username)
             if not password:
                 print_error(f"No password found for username: {username}")
                 continue
@@ -125,7 +130,7 @@ def post_reel_multiple_accounts():
                 print_error(f"Failed to login for {username}")
                 continue
 
-            save_reel(username, account_to_scrape)
+            save_reel(username, account_to_scrape, tagline)
             post_reel(username, api)
             print_success(f"Reel posted successfully for {username}")
 
