@@ -20,10 +20,10 @@ def main():
     actions = {
         1: add_new_account,
         2: add_scraping_accounts,
-        3: view_scraping_accounts,
+        3: add_tagline_to_account,
         4: remove_scraping_account,
         5: add_caption_to_account,
-        6: add_tagline_to_account,
+        6: view_scraping_accounts,
         7: sys.exit,
     }
 
@@ -32,10 +32,10 @@ def main():
         print_header("Account Management System")
         print("1. Add New Account")
         print("2. Add Scraping Accounts")
-        print("3. View Scraping Accounts")
+        print("3. Add Tagline to Account")
         print("4. Remove Scraping Account")
         print("5. Add Caption/Hastags to Account")
-        print("6. Add Tagline to Account")
+        print("6. View Scraping Accounts")
         print("7. Exit")
 
         try:
