@@ -6,7 +6,7 @@ import numpy as np
 
 def add_margins_to_reel(
     reel_path,
-    margin_horizontal=108,
+    margin_horizontal=54,
     margin_vertical=108,
     top_text="",
     font_size=40,
