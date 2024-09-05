@@ -109,9 +109,8 @@ def generate_caption(username):
 .
 Follow @{username} for more daily content
 .
-All clips used belong to their rightful owners
-.
-DM @brainrot.network for credits
+DM @brainrot.network for Credit/removal. No Copyright intended!
+©All rights and credits reserved to the respective owner(s)
 
 video #fyp #trending #explorepage
 
