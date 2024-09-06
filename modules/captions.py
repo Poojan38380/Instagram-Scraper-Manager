@@ -1,6 +1,6 @@
 import random
 from modules.accounts import get_caption_by_username
-from modules.utils import print_error, print_success
+from modules.utils import print_error
 
 
 def get_random_caption():
