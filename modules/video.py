@@ -15,7 +15,6 @@ def add_margins_to_reel(
     try:
         # Load the original video
         video = VideoFileClip(str(reel_path))
-
         # Calculate the new size with margins
         new_width = video.w + 2 * margin_horizontal
         new_height = video.h + 2 * margin_vertical
