@@ -10,7 +10,7 @@ def add_margins_to_reel(
     margin_vertical=108,
     top_text="",
     font_size=40,
-    font_color="black",
+    margin_color=(0, 0, 0),  # Margin color (default: black)
 ):
     try:
         # Load the original video
@@ -20,15 +20,18 @@ def add_margins_to_reel(
         new_width = video.w + 2 * margin_horizontal
         new_height = video.h + 2 * margin_vertical
 
-        # Create a color clip for the margin (e.g., white) with the same duration as the original video
-        margin_clip = ColorClip((new_width, new_height), color=(0, 0, 0)).set_duration(
-            video.duration
-        )
+        # Create a color clip for the margin with the same duration as the original video
+        margin_clip = ColorClip(
+            (new_width, new_height), color=margin_color
+        ).set_duration(video.duration)
+
+        # Calculate the inverse of the margin color for the font
+        font_color = tuple(255 - c for c in margin_color)
 
         # Create an image for the text
         if top_text:
-            # Create an image with the text
-            img = Image.new("RGB", (new_width, margin_vertical), color=(225, 225, 225))
+            # Create an image with the same color as the margin
+            img = Image.new("RGB", (new_width, margin_vertical), color=margin_color)
             d = ImageDraw.Draw(img)
 
             # Load the font with the specified size
@@ -38,6 +41,7 @@ def add_margins_to_reel(
             text_bbox = d.textbbox((0, 0), top_text, font=font)
             text_size = (text_bbox[2] - text_bbox[0], text_bbox[3] - text_bbox[1])
 
+            # Calculate the position of the text (centered)
             text_position = (
                 (new_width - text_size[0]) // 2,
                 (margin_vertical - text_size[1]) // 2,
