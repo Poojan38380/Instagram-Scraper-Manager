@@ -32,26 +32,32 @@ def post_reel_to_all_accounts():
             password = credentials["password"]
 
             try:
-                tagline = tagline_by_username(username)
-
-                scraping_accounts = get_scraping_accounts(username)
-                if not check_array_and_proceed(
-                    scraping_accounts, f"Scraping accounts for {username}"
-                ):
-                    continue
-
-                account_to_scrape = get_random_member(scraping_accounts)
-                if account_to_scrape is None:
-                    print_error(f"No valid scraping account found for {username}")
-                    continue
-
+                # Try to post reel
                 api = login(username, password)
                 if api is None:
                     print_error(f"Failed to login for {username}")
                     continue
+                reel_posted = post_reel(username, api)
+                if reel_posted == "no_reels_left":
 
-                save_reel(username, account_to_scrape, tagline)
-                post_reel(username, api)
+                    tagline = tagline_by_username(username)
+                    scraping_accounts = get_scraping_accounts(username)
+                    if not check_array_and_proceed(
+                        scraping_accounts, f"Scraping accounts for {username}"
+                    ):
+                        continue
+                    account_to_scrape = get_random_member(scraping_accounts)
+                    if account_to_scrape is None:
+                        print_error(f"No valid scraping account found for {username}")
+                        continue
+                    save_reel(username, account_to_scrape, tagline)
+
+                    # Retry posting after saving new reels
+                    reel_posted = post_reel(username, api)
+                    if not reel_posted:
+                        print_error(f"Failed to post a reel for {username} ")
+                    else:
+                        print_success(f"Successfully posted reel for {username}")
 
             except Exception as e:
                 print_error(f"Error processing credentials for {username}: {str(e)}")
@@ -101,13 +107,9 @@ def post_reel_single_account():
             # Retry posting after saving new reels
             reel_posted = post_reel(username, api)
             if not reel_posted:
-                print_error(
-                    f"Failed to post a reel for {username} after saving new reels."
-                )
+                print_error(f"Failed to post a reel for {username} ")
             else:
-                print_success(
-                    f"Successfully posted reel after saving new reels for {username}"
-                )
+                print_success(f"Successfully posted reel for {username}")
 
     except Exception as e:
         print_error(f"Failed to post reel for single account: {str(e)}")
