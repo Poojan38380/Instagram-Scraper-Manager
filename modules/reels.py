@@ -77,8 +77,9 @@ def post_reel(username, api):
         reel_folder_path = Path(f"reels/{username}")
         reel_files = list(reel_folder_path.glob("*.mp4"))
 
+        # Check if there are any reel files to post
         if not check_array_and_proceed(reel_files, "Reel files"):
-            return
+            return "no_reels_left"  # Indicate that no reels were posted due to empty folder
 
         for reel_path in reel_files:
             reel_code = reel_path.stem
@@ -87,6 +88,10 @@ def post_reel(username, api):
             if is_reel_posted_by_user(username, reel_code):
                 print(f"Reel {reel_code} has already been posted. Deleting file.")
                 delete_file(reel_path)
+
+                # Recheck if the folder is empty after deletion
+                if not any(reel_folder_path.glob("*.mp4")):
+                    return "no_reels_left"  # Folder is empty after deletion
                 continue
 
             api.delay_range = [1, 3]
@@ -112,19 +117,20 @@ def post_reel(username, api):
             post_to_story(api, media, reel_path, username, reel_folder_path)
 
             # Exit after posting one reel
-            break
+            return "reel_posted"  # Indicate that reel posting was successful
 
     except Exception as e:
         if "feedback_required" in str(e):
             print_error(f"Instagram rate limit hit for {username}.")
             add_reel_to_user(username, reel_code)
-
         else:
             print_error(f"Failed to post reel for {username}: {str(e)}")
+        return "posting_error"  # Indicate that reel posting failed
     finally:
-        # Clean up the uploaded video file if it exists
-        thumbnail_path = reel_folder_path / f"{reel_code}.mp4.jpg"
-        delete_file(thumbnail_path)
+        # Clean up the uploaded video file if it exists, only if reel_code is defined
+        if "reel_code" in locals():
+            thumbnail_path = reel_folder_path / f"{reel_code}.mp4.jpg"
+            delete_file(thumbnail_path)
 
 
 def delete_reel(api):

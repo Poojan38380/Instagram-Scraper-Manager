@@ -75,24 +75,39 @@ def post_reel_single_account():
             return
         tagline = tagline_by_username(username)
 
-        scraping_accounts = get_scraping_accounts(username)
-        if not check_array_and_proceed(
-            scraping_accounts, f"Scraping accounts for {username}"
-        ):
-            return
-
-        account_to_scrape = get_random_member(scraping_accounts)
-        if account_to_scrape is None:
-            print_error(f"No valid scraping account found for {username}")
-            return
-
         api = login(username, password)
         if api is None:
             print_error(f"Failed to login for {username}")
             return
 
-        save_reel(username, account_to_scrape, tagline)
-        post_reel(username, api)
+        # Try to post reel
+        reel_posted = post_reel(username, api)
+
+        # If posting failed because no reel was available, save reels and retry posting
+        if reel_posted == "no_reels_left":
+            print(f"No reels found for {username}, attempting to save new reels.")
+            scraping_accounts = get_scraping_accounts(username)
+            if not check_array_and_proceed(
+                scraping_accounts, f"Scraping accounts for {username}"
+            ):
+                return
+
+            account_to_scrape = get_random_member(scraping_accounts)
+            if account_to_scrape is None:
+                print_error(f"No valid scraping account found for {username}")
+                return
+            save_reel(username, account_to_scrape, tagline)
+
+            # Retry posting after saving new reels
+            reel_posted = post_reel(username, api)
+            if not reel_posted:
+                print_error(
+                    f"Failed to post a reel for {username} after saving new reels."
+                )
+            else:
+                print_success(
+                    f"Successfully posted reel after saving new reels for {username}"
+                )
 
     except Exception as e:
         print_error(f"Failed to post reel for single account: {str(e)}")
