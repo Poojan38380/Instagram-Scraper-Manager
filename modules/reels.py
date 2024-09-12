@@ -72,7 +72,6 @@ def save_reel(username, account_to_scrape, tagline=""):
 
 
 def post_reel(username, api):
-    print_header(f"Posting reel for user: {username}")
     try:
         reel_folder_path = Path(f"reels/{username}")
         reel_files = list(reel_folder_path.glob("*.mp4"))

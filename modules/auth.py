@@ -73,10 +73,10 @@ def login(username: str, password: str) -> Client:
         Client: An authenticated instagrapi Client instance.
     """
     try:
-        # Try to load API client from local storage
-        api = load_api_client(username)
-        if api:
-            return api
+        # # Try to load API client from local storage
+        # api = load_api_client(username)
+        # if api:
+        #     return api
 
         print_header("Initializing login...")
         api = Client()
@@ -98,8 +98,8 @@ def login(username: str, password: str) -> Client:
         api.get_timeline_feed()
         print_success("Logged in successfully.")
 
-        # Save the API client to local storage for future use
-        save_api_client(api, username)
+        # # Save the API client to local storage for future use
+        # save_api_client(api, username)
 
         return api
 

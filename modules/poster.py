@@ -32,11 +32,13 @@ def post_reel_to_all_accounts():
             password = credentials["password"]
 
             try:
-                # Try to post reel
                 api = login(username, password)
                 if api is None:
                     print_error(f"Failed to login for {username}")
                     continue
+
+                # Try to post reel
+                print(f"Flushing: {username}")
                 reel_posted = post_reel(username, api)
                 if reel_posted == "no_reels_left":
 
@@ -52,6 +54,7 @@ def post_reel_to_all_accounts():
                         continue
                     save_reel(username, account_to_scrape, tagline)
 
+                    print_header(f"Posting reel for user: {username}")
                     # Retry posting after saving new reels
                     reel_posted = post_reel(username, api)
                     if not reel_posted:
@@ -87,6 +90,7 @@ def post_reel_single_account():
             return
 
         # Try to post reel
+        print(f"Flushing: {username}")
         reel_posted = post_reel(username, api)
 
         # If posting failed because no reel was available, save reels and retry posting
@@ -104,6 +108,7 @@ def post_reel_single_account():
                 return
             save_reel(username, account_to_scrape, tagline)
 
+            print_header(f"Posting reel for user: {username}")
             # Retry posting after saving new reels
             reel_posted = post_reel(username, api)
             if not reel_posted:
@@ -173,6 +178,74 @@ def posting_strategy_1():
     while True:
         schedule.run_pending()
         time.sleep(1)
+
+
+def post_reel_multiple_times_for_account():
+    print_header("Starting to post reels multiple times for a single account")
+
+    try:
+        # Step 1: User selects an account
+        username = select_account_action("Select an account to post reel")
+        if username is None:
+            print_error("No account selected")
+            return
+
+        # Step 2: Get the password and tagline for the selected account
+        password = get_password_by_username(username)
+        if not password:
+            print_error(f"No password found for username: {username}")
+            return
+        tagline = tagline_by_username(username)
+
+        # Step 3: Prompt the user for how many times to post
+        try:
+            num_posts = int(
+                input(f"Enter the number of times to post reels for {username}: ")
+            )
+            if num_posts <= 0:
+                print_error("The number of posts must be greater than zero.")
+                return
+        except ValueError:
+            print_error("Invalid input. Please enter a valid number.")
+            return
+
+        # Step 4: Log in to the account
+        api = login(username, password)
+        if api is None:
+            print_error(f"Failed to login for {username}")
+            return
+
+        # Step 5: Post the reel `X` times
+        for i in range(num_posts):
+            print(f"Flushing: {username} - Attempt {i+1} of {num_posts}")
+
+            reel_posted = post_reel(username, api)
+
+            # If no reels are left, scrape new reels and retry
+            if reel_posted == "no_reels_left":
+                print(f"No reels found for {username}, attempting to save new reels.")
+                scraping_accounts = get_scraping_accounts(username)
+                if not check_array_and_proceed(
+                    scraping_accounts, f"Scraping accounts for {username}"
+                ):
+                    break
+
+                account_to_scrape = get_random_member(scraping_accounts)
+                if account_to_scrape is None:
+                    print_error(f"No valid scraping account found for {username}")
+                    break
+                save_reel(username, account_to_scrape, tagline)
+
+                print_header(f"Posting reel for user: {username}")
+                reel_posted = post_reel(username, api)
+
+            if not reel_posted:
+                print_error(f"Failed to post reel {i+1} for {username}")
+            else:
+                print_success(f"Successfully posted reel {i+1} for {username}")
+
+    except Exception as e:
+        print_error(f"Failed to post reels multiple times for {username}: {str(e)}")
 
 
 def single_account_flush():
