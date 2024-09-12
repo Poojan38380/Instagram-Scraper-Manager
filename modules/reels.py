@@ -86,7 +86,16 @@ def post_reel(username, api):
             # Check if the reel has already been posted
             if is_reel_posted_by_user(username, reel_code):
                 print(f"Reel {reel_code} has already been posted. Deleting file.")
-                delete_file(reel_path)
+                try:
+                    delete_file(reel_path)
+                except PermissionError as e:
+                    if "WinError 32" in str(e):
+                        print_error(
+                            f"File in use error: {str(e)}. Returning no reels left."
+                        )
+                        return (
+                            "no_reels_left"  # If file is in use, return no_reels_left
+                        )
 
                 # Recheck if the folder is empty after deletion
                 if not any(reel_folder_path.glob("*.mp4")):
