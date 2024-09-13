@@ -115,6 +115,7 @@ def post_reel(username, api):
                 location=LOCATION,
                 extra_data={
                     "custom_accessibility_caption": CAPTION,
+                    "share_to_feed": False,  # Do not share the reel to the main feed
                 },
             )
 
@@ -123,6 +124,13 @@ def post_reel(username, api):
 
             print(f"Initializing posting story...")
             post_to_story(api, media, reel_path, username, reel_folder_path)
+
+            # View and Like the posted reel
+            try:
+                api.media_like(media.id)
+                print_success(f"Reel {reel_code} liked successfully.")
+            except Exception as e:
+                print_error(f"Failed to like reel {reel_code}: {str(e)}")
 
             # Exit after posting one reel
             return "reel_posted"  # Indicate that reel posting was successful
