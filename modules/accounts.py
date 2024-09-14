@@ -6,7 +6,7 @@ from modules.utils import (
     print_success,
     get_user_input,
 )
-from modules.follow import initial_follow_accounts
+from modules.follow import initial_follow_accounts, follow_accounts
 
 accounts_collection = db.accounts
 posted_reels_collection = db.posted_reels
@@ -141,6 +141,16 @@ def add_scraping_accounts():
     if not new_scraping_accounts:
         print_error("No new scraping accounts to add.")
         return
+
+    password = get_password_by_username(selected_username)
+
+    api = login(username, password)
+
+    if api is None:
+        print_error("Failed to login. Check your credentials and try again.")
+        return
+
+    follow_accounts(api, new_scraping_accounts)
 
     try:
         accounts_collection.update_one(
