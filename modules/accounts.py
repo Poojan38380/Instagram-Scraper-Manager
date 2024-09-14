@@ -6,7 +6,7 @@ from modules.utils import (
     print_success,
     get_user_input,
 )
-from modules.misc import initial_follow_accounts
+from modules.follow import initial_follow_accounts
 
 accounts_collection = db.accounts
 posted_reels_collection = db.posted_reels
