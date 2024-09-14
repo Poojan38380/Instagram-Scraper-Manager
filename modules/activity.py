@@ -8,7 +8,7 @@ comments = ["Nice post!", "Awesome!", "Great content!", "Love this!", "❤️❤
 def human_like_scrolling(
     api,
     total_time=600,
-    action_probability=0.3,
+    action_probability=0.5,
     comment_probability=0.2,
     comments_list=comments,
 ):
@@ -72,6 +72,10 @@ def human_like_scrolling(
 
                 # Randomly decide whether to comment on the post
                 if random.random() < comment_probability and comments_list:
+
+                    api.media_like(post_id)
+                    print(f"Liked post {post_id}.")
+
                     comment = random.choice(comments_list)
                     api.media_comment(post_id, comment)
                     print(f"Commented on post {post_id}: {comment}")

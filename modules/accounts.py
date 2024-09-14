@@ -145,12 +145,13 @@ def add_scraping_accounts():
 
     password = get_password_by_username(selected_username)
 
-    api = login(username, password)
+    api = login(selected_username, password)
 
     if api is None:
         print_error("Failed to login. Check your credentials and try again.")
         return
 
+    print(f"Initiating follow actions for user '{selected_username}'.")
     follow_accounts(api, new_scraping_accounts)
 
     try:
