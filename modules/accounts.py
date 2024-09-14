@@ -7,6 +7,7 @@ from modules.utils import (
     get_user_input,
 )
 from modules.follow import initial_follow_accounts, follow_accounts
+from modules.activity import human_like_scrolling
 
 accounts_collection = db.accounts
 posted_reels_collection = db.posted_reels
@@ -468,3 +469,31 @@ def tagline_by_username(selected_username):
         return tagline
     else:
         return ""
+
+
+def login_and_scroll():
+    # Step 1: Ask the user to choose an account from the database
+    selected_username = select_account_action(
+        "Select an account to scroll through its feed:"
+    )
+    if not selected_username:
+        return  # Exit if no valid account is selected
+
+    # Step 2: Retrieve the account's password from the database
+    password = get_password_by_username(selected_username)
+    if not password:
+        return  # Exit if the password retrieval fails
+
+    # Step 3: Login to the selected account using the retrieved credentials
+    api = login(selected_username, password)
+    if api is None:
+        print_error("Failed to login. Check your credentials and try again.")
+        return  # Exit if login fails
+
+    # Step 4: Pass the logged-in api object to the human_like_scrolling function
+    try:
+        human_like_scrolling(
+            api, max_posts=10, action_probability=0.7
+        )  # Customize max_posts and action_probability as needed
+    except Exception as e:
+        print_error(f"An error occurred during scrolling: {e}")
