@@ -493,7 +493,7 @@ def login_and_scroll():
     # Step 4: Pass the logged-in api object to the human_like_scrolling function
     try:
         human_like_scrolling(
-            api, max_posts=10, action_probability=0.7
+            api
         )  # Customize max_posts and action_probability as needed
     except Exception as e:
         print_error(f"An error occurred during scrolling: {e}")
