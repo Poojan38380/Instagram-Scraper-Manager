@@ -6,8 +6,9 @@ comments = ["Nice post!", "Awesome!", "Great content!", "Love this!", "❤️❤
 
 
 def human_like_scrolling(
-    api,username=""
-    total_time=300,
+    api,
+    username="",
+    total_time=1800,
     action_probability=0.5,
     comment_probability=0.2,
     comments_list=comments,
@@ -53,7 +54,9 @@ def human_like_scrolling(
                 # Check if the total time limit has been reached
                 if (time.time() - start_time) >= total_time:
                     print(f"{username} : Time limit of {total_time} seconds reached.")
-                    print(f"{username} : Finished interacting with {interacted_posts} posts.")
+                    print(
+                        f"{username} : Finished interacting with {interacted_posts} posts."
+                    )
                     return
 
                 post_id = post["pk"]
@@ -62,7 +65,9 @@ def human_like_scrolling(
                 time_on_post = random.uniform(
                     5, 25
                 )  # Spend 5 to 25 seconds on each post
-                print(f"{username} : Viewing post {post_id} for {time_on_post:.2f} seconds...")
+                print(
+                    f"{username} : Viewing post {post_id} for {time_on_post:.2f} seconds..."
+                )
                 time.sleep(time_on_post)
 
                 # Randomly decide whether to like the post

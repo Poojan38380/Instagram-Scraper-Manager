@@ -575,7 +575,7 @@ def login_and_scroll():
         return  # Exit if no accounts are found
 
     # Step 2: Set up a ThreadPoolExecutor to run multiple accounts concurrently
-    max_workers = min(10, len(all_accounts))  # Adjust max_workers as needed
+    max_workers = min(25, len(all_accounts))  # Adjust max_workers as needed
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # Step 3: Submit tasks for each account to the executor
         futures = {
