@@ -1,6 +1,7 @@
 import random
 import time
 import json
+from modules.utils import print_error
 
 comments = ["Nice post!", "Awesome!", "Great content!", "Love this!", "❤️❤️"]
 
@@ -34,7 +35,7 @@ def human_like_scrolling(
             # feed = api.reels_tray()  # For reel feed
 
             if not feed or "feed_items" not in feed:
-                print(f"{username} : No posts found.")
+                print_error(f"{username} : No posts found.")
                 return
 
             # Filter out only media posts and ignore suggested users
@@ -47,7 +48,7 @@ def human_like_scrolling(
 
             # If no posts are left, exit loop
             if not posts:
-                print(f"{username}: No more posts to interact with.")
+                print_error(f"{username}: No more posts to interact with.")
                 break
 
             for post in posts:
@@ -88,11 +89,11 @@ def human_like_scrolling(
                 interacted_posts += 1
 
             # Fetch more posts if time is still remaining
-            print("Fetching more posts...")
+            print(f"{username} : Fetching more posts...")
 
         print(
             f"{username} : Finished interacting with {interacted_posts} posts in {total_time} seconds."
         )
 
     except Exception as e:
-        print(f"{username} : An error occurred while scrolling: {str(e)}")
+        print_error(f"{username} : An error occurred while scrolling: {str(e)}")
