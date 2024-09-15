@@ -472,29 +472,66 @@ def tagline_by_username(selected_username):
         return ""
 
 
+# def login_and_scroll():
+#     # Step 1: Ask the user to choose an account from the database
+#     selected_username = select_account_action(
+#         "Select an account to scroll through its feed:"
+#     )
+#     if not selected_username:
+#         return  # Exit if no valid account is selected
+
+#     # Step 2: Retrieve the account's password from the database
+#     password = get_password_by_username(selected_username)
+#     if not password:
+#         return  # Exit if the password retrieval fails
+
+#     # Step 3: Login to the selected account using the retrieved credentials
+#     api = login(selected_username, password)
+#     if api is None:
+#         print_error("Failed to login. Check your credentials and try again.")
+#         return  # Exit if login fails
+
+#     # Step 4: Pass the logged-in api object to the human_like_scrolling function
+#     try:
+#         human_like_scrolling(
+#             api
+#         )  # Customize max_posts and action_probability as needed
+#     except Exception as e:
+#         print_error(f"An error occurred during scrolling: {e}")
+
+
 def login_and_scroll():
-    # Step 1: Ask the user to choose an account from the database
-    selected_username = select_account_action(
-        "Select an account to scroll through its feed:"
-    )
-    if not selected_username:
-        return  # Exit if no valid account is selected
+    # Step 1: Get all usernames and passwords from the database
+    all_accounts = get_all_usernames_and_passwords()
 
-    # Step 2: Retrieve the account's password from the database
-    password = get_password_by_username(selected_username)
-    if not password:
-        return  # Exit if the password retrieval fails
+    if not all_accounts:
+        print_error("No accounts found in the database.")
+        return  # Exit if no accounts are found
 
-    # Step 3: Login to the selected account using the retrieved credentials
-    api = login(selected_username, password)
-    if api is None:
-        print_error("Failed to login. Check your credentials and try again.")
-        return  # Exit if login fails
+    # Step 2: Iterate over all accounts and perform the login and scrolling actions
+    for account in all_accounts:
+        username = account["username"]
+        password = account["password"]
 
-    # Step 4: Pass the logged-in api object to the human_like_scrolling function
-    try:
-        human_like_scrolling(
-            api
-        )  # Customize max_posts and action_probability as needed
-    except Exception as e:
-        print_error(f"An error occurred during scrolling: {e}")
+        # Step 3: Login to each account using the credentials
+        print_header(f"Logging in to {username}...")
+        api = login(username, password)
+
+        if api is None:
+            print_error(
+                f"Failed to login to '{username}'. Skipping to the next account."
+            )
+            continue  # Skip to the next account if login fails
+
+        # Step 4: Pass the logged-in api object to the human_like_scrolling function
+        try:
+            print(f"Scrolling through feed for '{username}'...")
+            human_like_scrolling(
+                api
+            )  # Customize max_posts and action_probability as needed
+        except Exception as e:
+            print_error(f"An error occurred during scrolling for '{username}': {e}")
+        else:
+            print_success(f"Successfully scrolled through feed for '{username}'.")
+
+    print_header("Finished scrolling through all accounts.")

@@ -7,7 +7,7 @@ comments = ["Nice post!", "Awesome!", "Great content!", "Love this!", "❤️❤
 
 def human_like_scrolling(
     api,
-    total_time=600,
+    total_time=20,
     action_probability=0.5,
     comment_probability=0.2,
     comments_list=comments,
