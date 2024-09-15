@@ -6,7 +6,7 @@ comments = ["Nice post!", "Awesome!", "Great content!", "Love this!", "❤️❤
 
 
 def human_like_scrolling(
-    api,
+    api,username=""
     total_time=300,
     action_probability=0.5,
     comment_probability=0.2,
@@ -33,7 +33,7 @@ def human_like_scrolling(
             # feed = api.reels_tray()  # For reel feed
 
             if not feed or "feed_items" not in feed:
-                print("No posts found in the feed.")
+                print(f"{username} : No posts found.")
                 return
 
             # Filter out only media posts and ignore suggested users
@@ -42,18 +42,18 @@ def human_like_scrolling(
                 for item in feed["feed_items"]
                 if "media_or_ad" in item
             ]
-            print(f"Retrieved {len(posts)} posts from the feed.")
+            print(f"{username} : Retrieved {len(posts)} posts.")
 
             # If no posts are left, exit loop
             if not posts:
-                print("No more posts to interact with.")
+                print(f"{username}: No more posts to interact with.")
                 break
 
             for post in posts:
                 # Check if the total time limit has been reached
                 if (time.time() - start_time) >= total_time:
-                    print(f"Time limit of {total_time} seconds reached.")
-                    print(f"Finished interacting with {interacted_posts} posts.")
+                    print(f"{username} : Time limit of {total_time} seconds reached.")
+                    print(f"{username} : Finished interacting with {interacted_posts} posts.")
                     return
 
                 post_id = post["pk"]
@@ -62,23 +62,23 @@ def human_like_scrolling(
                 time_on_post = random.uniform(
                     5, 25
                 )  # Spend 5 to 25 seconds on each post
-                print(f"Viewing post {post_id} for {time_on_post:.2f} seconds...")
+                print(f"{username} : Viewing post {post_id} for {time_on_post:.2f} seconds...")
                 time.sleep(time_on_post)
 
                 # Randomly decide whether to like the post
                 if random.random() < action_probability:
                     api.media_like(post_id)
-                    print(f"Liked post {post_id}.")
+                    print(f"{username} -- Liked post {post_id}.")
 
                 # Randomly decide whether to comment on the post
                 if random.random() < comment_probability and comments_list:
 
                     api.media_like(post_id)
-                    print(f"Liked post {post_id}.")
+                    print(f"{username} -- Liked post {post_id}.")
 
                     comment = random.choice(comments_list)
                     api.media_comment(post_id, comment)
-                    print(f"Commented on post {post_id}: {comment}")
+                    print(f" {username} -- Commented on post {post_id}: {comment}")
 
                 interacted_posts += 1
 
@@ -86,8 +86,8 @@ def human_like_scrolling(
             print("Fetching more posts...")
 
         print(
-            f"Finished interacting with {interacted_posts} posts in {total_time} seconds."
+            f"{username} : Finished interacting with {interacted_posts} posts in {total_time} seconds."
         )
 
     except Exception as e:
-        print(f"An error occurred while scrolling: {str(e)}")
+        print(f"{username} : An error occurred while scrolling: {str(e)}")

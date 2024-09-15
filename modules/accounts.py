@@ -556,7 +556,7 @@ def login_and_scroll_single_account(account):
     try:
         print(f"Scrolling through feed for '{username}'...")
         human_like_scrolling(
-            api
+            api, username
         )  # Customize max_posts and action_probability as needed
     except Exception as e:
         print_error(f"An error occurred during scrolling for '{username}': {e}")
