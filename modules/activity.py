@@ -3,7 +3,28 @@ import time
 import json
 from modules.utils import print_error
 
-comments = ["Nice post!", "Awesome!", "Great content!", "Love this!", "❤️❤️"]
+comments = [
+    "This is so relatable! Anyone else feel the same? 😄",
+    "I love this! What do you guys think? 🤔",
+    "Wow, this just made my day! Who else agrees? 💯",
+    "This is so cool! Anyone else tried this? 🔥",
+    "Such good vibes! Who's feeling the same energy? ✨",
+    "Haha, this is gold! Anyone else laughing at this? 😂",
+    "I can't stop watching this! Anyone else obsessed? 😍",
+    "This is super inspiring! Anyone else motivated by this? 💪",
+    "Absolutely love this! What's everyone’s take on it? ❤️",
+    "This deserves more attention! Who agrees? 🚀",
+    "I was just thinking about this! Anyone else? 😲",
+    "Wow, I'm learning so much from this! Who’s with me? 📚",
+    "This is the kind of content we need more of! Who agrees? 🙌",
+    "I'm curious, has anyone tried this? Thoughts? 🤔",
+    "This is exactly what I needed today! Who else? 😎",
+    "I can't be the only one obsessed with this! Who's with me? 👀",
+    "Why is this so accurate?! 😂 Can anyone relate?",
+    "This really hit home! Anyone else feel this way? 😢",
+    "I could watch this all day! Who's with me? 😆",
+    "Totally agree with this! Anyone else think the same? 👍",
+]
 
 
 def human_like_scrolling(
@@ -14,6 +35,10 @@ def human_like_scrolling(
     keyword_action_boost=2,  # Additional boost for actions when keywords are found
     comments_list=comments,
     keywords=None,
+    idle_chance=0.1,  # Chance to "do nothing" for a period of time
+    idle_duration=(5, 20),  # Random idle time to simulate distraction
+    typo_chance=0.05,  # Chance of a typo in comments
+    max_typo_count=2,  # Max number of typos in a comment
 ):
     """
     Scrolls through the Instagram newsfeed or reel feed and interacts with posts in a human-like manner for a specified duration.
@@ -22,10 +47,14 @@ def human_like_scrolling(
     Args:
         api (Client): The instagrapi API client object.
         total_time (int): Total time to spend scrolling in seconds. Default is 60 seconds.
-        action_probability (float): Base probability (0 to 1) of liking a post or viewing a reel. Default is 0.5.
-        keyword_action_boost (float): Additional boost to action probability when keywords are found in the caption. Default is 0.3.
+        action_probability (float): Base probability (0 to 1) of liking a post or viewing a reel. Default is 0.4.
+        keyword_action_boost (float): Additional boost to action probability when keywords are found in the caption. Default is 2.
         comments_list (list): List of comments to randomly choose from when commenting. Default is None.
         keywords (list): List of keywords to check in the caption text. Default is None.
+        idle_chance (float): Probability of taking an idle break. Default is 0.1 (10%).
+        idle_duration (tuple): Range of seconds to stay idle during idle periods. Default is (5, 20).
+        typo_chance (float): Probability of introducing a typo in a comment. Default is 0.05.
+        max_typo_count (int): Maximum number of typos per comment. Default is 2.
     """
 
     start_time = time.time()  # Record the starting time
@@ -35,8 +64,25 @@ def human_like_scrolling(
     if keywords is None:
         keywords = []
 
+    def add_typos(text):
+        """Simulates human typing errors."""
+        if random.random() < typo_chance:
+            typo_count = random.randint(1, max_typo_count)
+            text_chars = list(text)
+            for _ in range(typo_count):
+                idx = random.randint(0, len(text_chars) - 1)
+                text_chars[idx] = random.choice("abcdefghijklmnopqrstuvwxyz")
+            return "".join(text_chars)
+        return text
+
     try:
         while (time.time() - start_time) < total_time:
+            # Simulate idle behavior
+            if random.random() < idle_chance:
+                idle_time = random.uniform(*idle_duration)
+                print(f"{username} : Taking a break for {idle_time:.2f} seconds...")
+                time.sleep(idle_time)
+
             # Fetch the newsfeed/reel feed posts
             feed = api.get_timeline_feed()  # For newsfeed
             # feed = api.reels_tray()  # For reel feed
@@ -75,8 +121,8 @@ def human_like_scrolling(
 
                     # Simulate time spent on post
                     time_on_post = random.uniform(
-                        5, 25
-                    )  # Spend 5 to 25 seconds on each post
+                        7, 35
+                    )  # More randomness (7 to 35 seconds)
                     print(
                         f"{username} : Viewing post {post_id} for {time_on_post:.2f} seconds..."
                     )
@@ -116,13 +162,18 @@ def human_like_scrolling(
                         and comments_list
                     ):
                         comment = random.choice(comments_list)
-                        api.media_comment(post_id, comment)
-                        print(f"{username} -- Commented on post {post_id}: {comment}")
+                        comment_with_typos = add_typos(
+                            comment
+                        )  # Add typos to the comment
+                        api.media_comment(post_id, comment_with_typos)
+                        print(
+                            f"{username} -- Commented on post {post_id}: {comment_with_typos}"
+                        )
 
                     interacted_posts += 1
 
                 except Exception as e:
-                    # If feedback_required error occurs, shut down immediately
+                    # Handle feedback_required error
                     error_message = str(e)
                     if "feedback_required" in error_message:
                         print_error(
