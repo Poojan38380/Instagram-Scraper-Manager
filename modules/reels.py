@@ -39,7 +39,7 @@ def save_reel(username, account_to_scrape, tagline=""):
                 reel_found = True
 
                 if is_reel_posted_by_user(username, post.shortcode):
-                    print(f"Reel {post.shortcode} has already been posted.")
+
                     continue
                 # Added a feature to filter out posts that have certain view_count threshold
                 # if not should_save_reel(post):
@@ -56,8 +56,6 @@ def save_reel(username, account_to_scrape, tagline=""):
                 except requests.RequestException as e:
                     print_error(f"Failed to download reel {post.shortcode}: {str(e)}")
                 break
-            else:
-                print(f"Skipping post: {post.shortcode}")
 
         if not reel_found:
             print_error(
@@ -119,7 +117,7 @@ def post_reel(username, api):
                 },
             )
 
-            print_success(f"Successfully posted reel for {username}")
+            print_success(f"Successfully posted reel for {username}\n\n")
             add_reel_to_user(username, reel_code)
 
             print(f"Initializing posting story...")
