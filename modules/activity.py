@@ -130,7 +130,8 @@ def human_like_scrolling(
                     time.sleep(time_on_post)
 
                     # Check if the caption contains any of the specified keywords
-                    caption_text = post.get("caption", {}).get("text", "")
+                    caption = post.get("caption")
+                    caption_text = caption.get("text", "") if caption else ""
                     contains_keyword = False
 
                     if keywords:
