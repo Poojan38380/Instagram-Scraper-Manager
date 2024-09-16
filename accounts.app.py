@@ -7,6 +7,7 @@ from modules.accounts import (
     remove_scraping_account,
     add_caption_to_account,
     login_and_scroll,
+    login_and_scroll_single,
     add_keywords_to_account,
 )
 
@@ -28,7 +29,8 @@ def main():
         6: view_scraping_accounts,
         7: add_keywords_to_account,
         8: login_and_scroll,
-        9: sys.exit,
+        9: login_and_scroll_single,
+        10: sys.exit,
     }
 
     while True:
@@ -42,7 +44,8 @@ def main():
         print("6. View Scraping Accounts")
         print("7. Add keywords to Account")
         print("8. login_and_scroll")
-        print("9. Exit")
+        print("9. login_and_scroll_single")
+        print("10. Exit")
 
         try:
             action = int(get_user_input("Choose an action: "))

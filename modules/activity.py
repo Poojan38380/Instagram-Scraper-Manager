@@ -9,13 +9,15 @@ comments = ["Nice post!", "Awesome!", "Great content!", "Love this!", "❤️❤
 def human_like_scrolling(
     api,
     username="",
-    total_time=1800,
+    total_time=60,
     action_probability=0.5,
     comment_probability=0.2,
     comments_list=comments,
+    keywords=None,
 ):
     """
     Scrolls through the Instagram newsfeed or reel feed and interacts with posts in a human-like manner for a specified duration.
+    Interacts with posts based on specific keywords in the caption if provided.
 
     Args:
         api (Client): The instagrapi API client object.
@@ -23,10 +25,15 @@ def human_like_scrolling(
         action_probability (float): Probability (0 to 1) of liking a post or viewing a reel. Default is 0.5.
         comment_probability (float): Probability (0 to 1) of commenting on a post. Default is 0.3.
         comments_list (list): List of comments to randomly choose from when commenting. Default is None.
+        keywords (list): List of keywords to check in the caption text. Default is None.
     """
 
     start_time = time.time()  # Record the starting time
     interacted_posts = 0
+
+    # If no keywords are provided, use an empty list
+    if keywords is None:
+        keywords = []
 
     try:
         while (time.time() - start_time) < total_time:
@@ -74,6 +81,20 @@ def human_like_scrolling(
                     )
                     time.sleep(time_on_post)
 
+                    # Check if the caption contains any of the specified keywords
+                    caption_text = post.get("caption", {}).get("text", "")
+
+                    if keywords:
+                        # Only interact with posts whose captions contain one of the keywords
+                        if not any(
+                            keyword.lower() in caption_text.lower()
+                            for keyword in keywords
+                        ):
+                            print(
+                                f"{username} : Post {post_id} skipped, no keywords found."
+                            )
+                            continue
+
                     # Randomly decide whether to like the post
                     if random.random() < action_probability:
                         api.media_like(post_id)
@@ -81,9 +102,6 @@ def human_like_scrolling(
 
                     # Randomly decide whether to comment on the post
                     if random.random() < comment_probability and comments_list:
-
-                        api.media_like(post_id)
-                        print(f"{username} -- Liked post {post_id}.")
                         comment = random.choice(comments_list)
                         api.media_comment(post_id, comment)
                         print(f"{username} -- Commented on post {post_id}: {comment}")
