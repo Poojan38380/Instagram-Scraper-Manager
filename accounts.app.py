@@ -6,11 +6,10 @@ from modules.accounts import (
     view_scraping_accounts,
     remove_scraping_account,
     add_caption_to_account,
-    login_and_scroll,
-    login_and_scroll_single,
     add_keywords_to_account,
 )
 
+from modules.interact import explore_reels_all_accounts, explore_reels_for_single
 from modules.utils import (
     print_header,
     print_error,
@@ -28,8 +27,8 @@ def main():
         5: add_caption_to_account,
         6: view_scraping_accounts,
         7: add_keywords_to_account,
-        8: login_and_scroll,
-        9: login_and_scroll_single,
+        8: explore_reels_for_single,
+        9: explore_reels_all_accounts,
         10: sys.exit,
     }
 
@@ -43,8 +42,8 @@ def main():
         print("5. Add Caption/Hastags to Account")
         print("6. View Scraping Accounts")
         print("7. Add keywords to Account")
-        print("8. login_and_scroll")
-        print("9. login_and_scroll_single")
+        print("8. Explore reels for single account")
+        print("9. Explore reels for ALL account")
         print("10. Exit")
 
         try:

@@ -35,6 +35,9 @@ Tri-Motor AWD:
 Range: ~500 miles
 Towing Capacity: 14,000 pounds
 """,
+            """An interesting fact is that bananas are berries, but strawberries are not. In botanical terms, a berry is a fleshy fruit produced from a single ovary and containing one or more seeds. By this definition, bananas, along with kiwis, grapes, and tomatoes, are true berries. On the other hand, strawberries, which develop from a flower with multiple ovaries, are classified as “aggregate fruits” rather than berries.
+This classification quirk arises from the complexities of fruit development in flowering plants. While many fruits commonly referred to as berries do not meet the botanical criteria, those that do often surprise us. For instance, watermelons and pumpkins are also technically berries, while raspberries and blackberries are not.
+This is an interesting fact because it challenges our everyday understanding of common fruits and highlights the intriguing details of plant biology. It also illustrates how scientific classification can differ significantly from culinary or popular usage, encouraging us to explore and appreciate the natural world’s diversity in greater depth. This surprising reclassification prompts a reexamination of what we think we know about the foods we eat and their botanical origins.""",
         ]
         return random.choice(captions_options)
     except Exception as e:

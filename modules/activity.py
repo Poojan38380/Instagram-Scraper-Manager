@@ -85,6 +85,7 @@ def human_like_scrolling(
 
             # Fetch the newsfeed/reel feed posts
             feed = api.get_timeline_feed()  # For newsfeed
+
             # feed = api.reels_tray()  # For reel feed
 
             if not feed or "feed_items" not in feed:
