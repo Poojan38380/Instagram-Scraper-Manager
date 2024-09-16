@@ -10,20 +10,20 @@ def human_like_scrolling(
     api,
     username="",
     total_time=60,
-    action_probability=0.5,
-    comment_probability=0.2,
+    action_probability=0.4,
+    keyword_action_boost=2,  # Additional boost for actions when keywords are found
     comments_list=comments,
     keywords=None,
 ):
     """
     Scrolls through the Instagram newsfeed or reel feed and interacts with posts in a human-like manner for a specified duration.
-    Interacts with posts based on specific keywords in the caption if provided.
+    Interacts with posts based on specific keywords in the caption if provided, with increased probability of liking/commenting.
 
     Args:
         api (Client): The instagrapi API client object.
         total_time (int): Total time to spend scrolling in seconds. Default is 60 seconds.
-        action_probability (float): Probability (0 to 1) of liking a post or viewing a reel. Default is 0.5.
-        comment_probability (float): Probability (0 to 1) of commenting on a post. Default is 0.3.
+        action_probability (float): Base probability (0 to 1) of liking a post or viewing a reel. Default is 0.5.
+        keyword_action_boost (float): Additional boost to action probability when keywords are found in the caption. Default is 0.3.
         comments_list (list): List of comments to randomly choose from when commenting. Default is None.
         keywords (list): List of keywords to check in the caption text. Default is None.
     """
@@ -71,6 +71,7 @@ def human_like_scrolling(
                         return
 
                     post_id = post["pk"]
+                    post_id_str = post["id"]
 
                     # Simulate time spent on post
                     time_on_post = random.uniform(
@@ -79,29 +80,41 @@ def human_like_scrolling(
                     print(
                         f"{username} : Viewing post {post_id} for {time_on_post:.2f} seconds..."
                     )
+                    api.media_seen([post_id_str])  # Mark the media as seen
                     time.sleep(time_on_post)
 
                     # Check if the caption contains any of the specified keywords
                     caption_text = post.get("caption", {}).get("text", "")
+                    contains_keyword = False
 
                     if keywords:
-                        # Only interact with posts whose captions contain one of the keywords
-                        if not any(
+                        # Check if any keywords are found in the caption
+                        contains_keyword = any(
                             keyword.lower() in caption_text.lower()
                             for keyword in keywords
-                        ):
-                            print(
-                                f"{username} : Post {post_id} skipped, no keywords found."
-                            )
-                            continue
+                        )
+
+                        if contains_keyword:
+                            print(f"{username} : Post {post_id} contains keywords.")
+
+                    # Adjust the action and comment probabilities based on whether keywords were found
+                    effective_action_probability = (
+                        action_probability * keyword_action_boost
+                        if contains_keyword
+                        else action_probability
+                    )
+                    effective_comment_probability = effective_action_probability / 2
 
                     # Randomly decide whether to like the post
-                    if random.random() < action_probability:
+                    if random.random() < effective_action_probability:
                         api.media_like(post_id)
                         print(f"{username} -- Liked post {post_id}.")
 
                     # Randomly decide whether to comment on the post
-                    if random.random() < comment_probability and comments_list:
+                    if (
+                        random.random() < effective_comment_probability
+                        and comments_list
+                    ):
                         comment = random.choice(comments_list)
                         api.media_comment(post_id, comment)
                         print(f"{username} -- Commented on post {post_id}: {comment}")
