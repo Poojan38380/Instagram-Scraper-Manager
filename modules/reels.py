@@ -143,7 +143,7 @@ def post_reel(username, api):
     finally:
         # Clean up the uploaded video file if it exists, only if reel_code is defined
         if "reel_code" in locals():
-            thumbnail_path = reel_folder_path / f"{reel_code}.mp4.jpg"
+            thumbnail_path = reel_folder_path / f"{reel_code}.mp4.jpg"  # type: ignore
             delete_file(thumbnail_path)
 
 

@@ -34,7 +34,7 @@ def get_video_duration(file_path):
         file_path = str(file_path)
         clip = VideoFileClip(file_path)
         duration = clip.duration
-        clip.reader.close()  # Properly close the video file
+        clip.reader.close()  # Properly close the video file   # type: ignore
         return duration
     except Exception as e:
         print_error(f"Error getting video duration: {e}")
@@ -82,7 +82,7 @@ def post_to_story(api, media, media_path, username, download_dir):
                     height=0.125,
                 )
             ],
-            links=[StoryLink(webUri=f"https://www.instagram.com/p/{media.code}/")],
+            links=[StoryLink(webUri=f"https://www.instagram.com/p/{media.code}/")],  # type: ignore
             hashtags=[
                 StoryHashtag(hashtag=hashtag, x=0.23, y=0.32, width=0.5, height=0.22)
             ],

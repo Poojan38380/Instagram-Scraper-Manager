@@ -52,7 +52,7 @@ def post_reel_to_all_accounts():
                     if account_to_scrape is None:
                         print_error(f"No valid scraping account found for {username}")
                         continue
-                    save_reel(username, account_to_scrape, tagline)
+                    save_reel(username, account_to_scrape, tagline)  # type: ignore
 
                     print_header(f"Posting reel for user: {username}")
                     # Retry posting after saving new reels
@@ -106,7 +106,7 @@ def post_reel_single_account():
             if account_to_scrape is None:
                 print_error(f"No valid scraping account found for {username}")
                 return
-            save_reel(username, account_to_scrape, tagline)
+            save_reel(username, account_to_scrape, tagline)  # type: ignore
 
             print_header(f"Posting reel for user: {username}")
             # Retry posting after saving new reels
@@ -151,8 +151,8 @@ def post_reel_multiple_accounts():
             if api is None:
                 print_error(f"Failed to login for {username}")
                 continue
-
-            save_reel(username, account_to_scrape, tagline)
+ 
+            save_reel(username, account_to_scrape, tagline)  # type: ignore
             post_reel(username, api)
             print_success(f"Reel posted successfully for {username}")
 
@@ -234,7 +234,7 @@ def post_reel_multiple_times_for_account():
                 if account_to_scrape is None:
                     print_error(f"No valid scraping account found for {username}")
                     break
-                save_reel(username, account_to_scrape, tagline)
+                save_reel(username, account_to_scrape, tagline) # type: ignore
 
                 print_header(f"Posting reel for user: {username}")
                 reel_posted = post_reel(username, api)

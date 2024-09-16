@@ -1,8 +1,5 @@
 from instagrapi import Client
 
-# adds a random delay between 1 and 3 seconds after each request
-Client.delay_range = [1, 3]
-
 import os
 import pickle
 from modules.utils import print_header, print_error, print_success

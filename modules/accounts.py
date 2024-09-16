@@ -148,6 +148,11 @@ def add_scraping_accounts():
 
     password = get_password_by_username(selected_username)
 
+    
+    if not password:
+        print_error("Cant fetch password")
+        return
+
     api = login(selected_username, password)
 
     if api is None:
