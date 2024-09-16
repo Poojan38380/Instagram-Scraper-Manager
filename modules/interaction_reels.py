@@ -111,6 +111,16 @@ def interact_with_reels(
                 except Exception as e:
                     # Handle feedback_required error
                     error_message = str(e)
+
+                    if "login_required" in error_message:
+                        print_error(
+                            f"{username} : Critical error encountered: {error_message}"
+                        )
+                        print_error(
+                            f"{username} : Exiting due to login being required. Please login again."
+                        )
+                        return  # Exit the function immediately
+
                     if "feedback_required" in error_message:
                         print_error(
                             f"{username} : Critical error encountered: {error_message}"
@@ -118,7 +128,7 @@ def interact_with_reels(
                         print_error(
                             f"{username} : Shutting down function to avoid Instagram rate-limiting issues."
                         )
-                        return
+                        return  # Exit the function immediately
 
                     # Skip the problematic reel but continue the loop for minor errors
                     print_error(

@@ -52,7 +52,7 @@ def save_last_interacted_reel(username, reel_pk):
         accounts_collection.update_one(
             {"username": username}, {"$set": {"last_interacted_reel": reel_pk}}
         )
-        print_success(f"Last interacted reel '{reel_pk}' saved for user '{username}'.")
+        print(f"Last interacted reel '{reel_pk}' saved for user '{username}'.")
     except Exception as e:
         print_error(f"Failed to save last interacted reel: {e}")
 
