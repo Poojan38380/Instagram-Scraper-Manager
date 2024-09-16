@@ -598,3 +598,67 @@ def login_and_scroll():
                 print_error(f"An error occurred for '{username}': {e}")
 
     print_header("Finished scrolling through all accounts.")
+
+
+def add_keywords_to_account():
+    # Step 1: Select an account to add keywords
+    selected_username = select_account_action("Select an account to add keywords:")
+    if not selected_username:
+        return
+
+    # Step 2: Prompt user to enter keywords
+    keywords_input = get_user_input("Enter keywords separated by commas: ")
+    if not keywords_input:
+        print_error("No keywords provided.")
+        return
+
+    # Step 3: Split the input into a list of keywords
+    keywords = [
+        keyword.strip() for keyword in keywords_input.split(",") if keyword.strip()
+    ]
+
+    if not keywords:
+        print_error("No valid keywords entered.")
+        return
+
+    # Step 4: Retrieve the existing keywords for the account, if any
+    try:
+        existing_account = accounts_collection.find_one({"username": selected_username})
+        if not existing_account:
+            print_error(f"Account '{selected_username}' not found.")
+            return
+
+        existing_keywords = existing_account.get("keywords", [])
+    except Exception as e:
+        print_error(f"Failed to retrieve account data: {e}")
+        return
+
+    # Step 5: Add new keywords to the existing ones, avoiding duplicates
+    new_keywords = list(set(existing_keywords + keywords))
+
+    # Step 6: Update the account with the new keywords
+    try:
+        accounts_collection.update_one(
+            {"username": selected_username}, {"$set": {"keywords": new_keywords}}
+        )
+        print_success(f"Keywords added to '{selected_username}' successfully.")
+    except Exception as e:
+        print_error(f"Failed to update keywords: {e}")
+
+
+def get_keywords_by_username(username):
+    try:
+        # Retrieve the account by username
+        account_data = accounts_collection.find_one({"username": username})
+
+        if not account_data:
+            print_error(f"Account '{username}' not found.")
+            return []
+
+        # Retrieve and return the keywords array
+        keywords = account_data.get("keywords", [])
+        return keywords
+
+    except Exception as e:
+        print_error(f"Failed to retrieve keywords for '{username}': {e}")
+        return []
