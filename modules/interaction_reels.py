@@ -90,14 +90,14 @@ def interact_with_reels(
                     # Randomly decide whether to like the reel
                     if random.random() < effective_action_probability:
                         api.media_like(reel_id)
-                        print(f"{username} -- Liked reel {reel_id}.")
+                        print(f"{username} -- Liked reel {reel_code}.")
 
                     # Randomly decide whether to comment on the reel
                     if random.random() < effective_comment_probability:
                         comment_with_typos = get_comment_for_reel()
                         api.media_comment(reel_id, comment_with_typos)
                         print(
-                            f"{username} -- Commented on reel {reel_id}: {comment_with_typos}"
+                            f"{username} -- Commented on reel {reel_code}: {comment_with_typos}"
                         )
 
                     interacted_reels += 1

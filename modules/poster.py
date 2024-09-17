@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from modules.accounts import (
     get_all_usernames_and_passwords,
     get_scraping_accounts,
@@ -19,7 +20,86 @@ import schedule
 import time
 
 
+def post_reel_to_account(credentials):
+    username = credentials["username"]
+    password = credentials["password"]
+
+    try:
+        api = login(username, password)
+        if api is None:
+            print_error(f"Failed to login for {username}")
+            return False
+
+        # Try to post reel
+        print(f"Flushing: {username}")
+        reel_posted = post_reel(username, api)
+        if reel_posted == "no_reels_left":
+            tagline = tagline_by_username(username)
+            scraping_accounts = get_scraping_accounts(username)
+            if not check_array_and_proceed(
+                scraping_accounts, f"Scraping accounts for {username}"
+            ):
+                return False
+
+            account_to_scrape = get_random_member(scraping_accounts)
+            if account_to_scrape is None:
+                print_error(f"No valid scraping account found for {username}")
+                return False
+
+            save_reel(username, account_to_scrape, tagline)  # type: ignore
+            print_header(f"Posting reel for user: {username}")
+
+            # Retry posting after saving new reels
+            reel_posted = post_reel(username, api)
+            if not reel_posted:
+                print_error(f"Failed to post a reel for {username}")
+                return False
+            else:
+                print_success(f"Successfully posted reel for {username}")
+                return True
+        else:
+            print_success(f"Successfully posted reel for {username}")
+            return True
+    except Exception as e:
+        print_error(f"Error processing credentials for {username}: {str(e)}")
+        return False
+
+
 def post_reel_to_all_accounts():
+    print_header("Starting to post reels to all accounts")
+
+    try:
+        user_credentials = get_all_usernames_and_passwords()
+        if not check_array_and_proceed(user_credentials, "User credentials"):
+            return
+
+        # Use ThreadPoolExecutor to post reels concurrently
+        max_workers = min(10, len(user_credentials))  # Adjust max_workers as needed
+
+        with ThreadPoolExecutor(max_workers=max_workers) as executor:
+            future_to_credentials = {
+                executor.submit(post_reel_to_account, credentials): credentials[
+                    "username"
+                ]
+                for credentials in user_credentials
+            }
+
+            for future in as_completed(future_to_credentials):
+                username = future_to_credentials[future]
+                try:
+                    result = future.result()
+                    if result:
+                        print_success(f"Finished posting for {username}")
+                    else:
+                        print_error(f"Failed posting for {username}")
+                except Exception as e:
+                    print_error(f"Error posting reel for {username}: {str(e)}")
+
+    except Exception as e:
+        print_error(f"Failed to process all accounts: {str(e)}")
+
+
+def post_reel_to_all_accounts_iteration():
     print_header("Starting to post reels to all accounts")
 
     try:
@@ -151,7 +231,7 @@ def post_reel_multiple_accounts():
             if api is None:
                 print_error(f"Failed to login for {username}")
                 continue
- 
+
             save_reel(username, account_to_scrape, tagline)  # type: ignore
             post_reel(username, api)
             print_success(f"Reel posted successfully for {username}")
@@ -234,7 +314,7 @@ def post_reel_multiple_times_for_account():
                 if account_to_scrape is None:
                     print_error(f"No valid scraping account found for {username}")
                     break
-                save_reel(username, account_to_scrape, tagline) # type: ignore
+                save_reel(username, account_to_scrape, tagline)  # type: ignore
 
                 print_header(f"Posting reel for user: {username}")
                 reel_posted = post_reel(username, api)
