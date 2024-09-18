@@ -40,7 +40,7 @@ def explore_feed_for_single():
         print_error(f"An error occurred during scrolling: {e}")
 
 
-def explore_feed_single_account(account):
+def explore_feed_single_account(account, total_time=300):
     username = account["username"]
     password = account["password"]
 
@@ -57,7 +57,7 @@ def explore_feed_single_account(account):
     try:
         print(f"Scrolling through feed for '{username}'...")
         human_like_scrolling(
-            api, username=username, keywords=keywords, total_time=1800
+            api, username=username, keywords=keywords, total_time=total_time
         )  # Customize max_posts and action_probability as needed
     except Exception as e:
         print_error(f"An error occurred during scrolling for '{username}': {e}")
@@ -74,13 +74,24 @@ def explore_feed_all_accounts():
     if not all_accounts:
         print_error("No accounts found in the database.")
         return  # Exit if no accounts are found
-
+    try:
+        total_minutes = int(
+            input("Enter the total time (in minutes) to run the function: ")
+        )
+        total_time = total_minutes * 60  # Convert minutes to seconds
+    except ValueError:
+        print_error(
+            "Invalid input. Please enter a valid number for the total time in minutes."
+        )
+        return
     # Step 2: Set up a ThreadPoolExecutor to run multiple accounts concurrently
     max_workers = min(25, len(all_accounts))  # Adjust max_workers as needed
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         # Step 3: Submit tasks for each account to the executor
         futures = {
-            executor.submit(explore_feed_single_account, account): account["username"]
+            executor.submit(explore_feed_single_account, account, total_time): account[
+                "username"
+            ]
             for account in all_accounts
         }
 

@@ -1,3 +1,4 @@
+import shutil
 from instagrapi import Client
 
 import os
@@ -58,13 +59,27 @@ def load_api_client(username: str) -> Client:
     return None  # type: ignore
 
 
-def login(username: str, password: str) -> Client:
+def delete_user_login_info(username: str) -> None:
+    """
+    Delete the folder containing the user's login information.
+
+    Args:
+        username (str): The Instagram username.
+    """
+    user_folder = f"loginInfo/{username}"
+    if os.path.exists(user_folder):
+        shutil.rmtree(user_folder)
+        print_success(f"Deleted folder for {username}. Retrying login.")
+
+
+def login(username: str, password: str, retry: bool = False) -> Client:
     """
     Login to Instagram using instagrapi Client.
 
     Args:
         username (str): Instagram username.
         password (str): Instagram password.
+        retry (bool): Whether this is a retry attempt after deleting login information.
 
     Returns:
         Client: An authenticated instagrapi Client instance.
@@ -73,6 +88,8 @@ def login(username: str, password: str) -> Client:
         # Try to load API client from local storage
         api = load_api_client(username)
         if api:
+            api.get_timeline_feed()
+            print_success("Logged in successfully.")
             return api
 
         print_header("Initializing login...")
@@ -102,11 +119,23 @@ def login(username: str, password: str) -> Client:
 
     except Exception as e:
         if "login_required" in str(e):
-            print_error("Login failed. Please check your username and password.")
+            print_error(
+                f"{username} -- Login required. Please check your username and password."
+            )
+            if not retry:
+                # Delete user login info and retry login
+                delete_user_login_info(username)
+                return login(username, password, retry=True)
+            else:
+                print_error(
+                    f"{username} -- Retry failed even after deleting previous login information. :: {str(e)}"
+                )
         elif "challenge_required" in str(e):
             print_error(
-                "Instagram has flagged this login attempt. Please check your account for security challenges."
+                f"{username} -- Instagram has flagged this login attempt. Please check your account for security challenges.::: {str(e)}"
             )
         else:
-            print_error(f"An unexpected error occurred during login: {str(e)}")
+            print_error(
+                f"{username} -- An unexpected error occurred during login: {str(e)}"
+            )
         raise e  # Re-raise the exception for further handling if needed
