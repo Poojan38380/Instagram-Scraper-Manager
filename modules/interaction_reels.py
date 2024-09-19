@@ -80,11 +80,7 @@ def interact_with_reels(
                             print(f"{username} : reel {reel_code} contains keywords.")
 
                     # Adjust the action and comment probabilities based on whether keywords were found
-                    effective_action_probability = (
-                        action_probability + keyword_action_boost
-                        if contains_keyword
-                        else action_probability
-                    )
+                    effective_action_probability = 1 if contains_keyword else 0
                     effective_comment_probability = effective_action_probability / 2
 
                     # Randomly decide whether to like the reel
