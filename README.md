@@ -2,8 +2,6 @@
 
 Instagram-Scraper-Manager is a Python-based tool designed to scrape content from Instagram accounts and automate posting to your own Instagram account. This project utilizes **instagrapi**, **instaloader**, and **moviepy** libraries to provide a seamless experience for managing multiple accounts and automating content posting.
 
-![visitors](https://visitor-badge.glitch.me/badge?page_id=YOUR_GITHUB_USERNAME.YOUR_REPO_NAME)
-
 
 ## Features
 
