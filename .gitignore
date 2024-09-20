@@ -9,6 +9,7 @@ loginInfo
 tempImage
 reels
 reels_data
+.vscode
 .cph
 ./idea
 *.json
