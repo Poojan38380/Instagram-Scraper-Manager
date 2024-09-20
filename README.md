@@ -2,6 +2,17 @@
 
 Instagram-Scraper-Manager is a Python-based tool designed to scrape content from Instagram accounts and automate posting to your own Instagram account. This project utilizes **instagrapi**, **instaloader**, and **moviepy** libraries to provide a seamless experience for managing multiple accounts and automating content posting.
 
+# Repository Traffic, Clones, and Stars
+
+<!-- stats start -->
+
+Views: Loading...
+Clones: Loading...
+Stars: Loading...
+
+<!-- stats end -->
+
+This section auto-updates hourly.
 
 ## Features
 
@@ -13,23 +24,25 @@ Instagram-Scraper-Manager is a Python-based tool designed to scrape content from
 ## How to Use
 
 1. **Account Management**:
-    - Run `accounts.app.py` to manage accounts.
-    - Options include adding new accounts, managing scraping accounts, and setting captions or taglines.
+
+   - Run `accounts.app.py` to manage accounts.
+   - Options include adding new accounts, managing scraping accounts, and setting captions or taglines.
 
 2. **Posting Reels**:
-    - Run `poster.app.py` to post content to your Instagram accounts.
-    - Select from multiple posting strategies, including posting to all accounts or to specific ones.
+   - Run `poster.app.py` to post content to your Instagram accounts.
+   - Select from multiple posting strategies, including posting to all accounts or to specific ones.
 
 ## Installation
 
 1. Clone the repository:
-    ```bash
-    git clone https://github.com/Poojan38380/Instagram-Scraper-Manager.git
-    ```
+   ```bash
+   git clone https://github.com/Poojan38380/Instagram-Scraper-Manager.git
+   ```
 2. Install the required dependencies:
-    ```bash
-    pip install -r requirements.txt
-    ```
+
+   ```bash
+   pip install -r requirements.txt
+   ```
 
 3. Add your Instagram account(s) via `accounts.app.py` and start automating posts using `poster.app.py`.
 
@@ -46,6 +59,5 @@ We welcome contributions and collaboration! Feel free to post issues, suggest fe
 ## License
 
 This project is licensed under the MIT License.
-
 
 Made with ❤️ by Poojan!
