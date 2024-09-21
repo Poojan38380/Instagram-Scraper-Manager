@@ -134,6 +134,14 @@ def login(username: str, password: str, retry: bool = False) -> Client:
             print_error(
                 f"{username} -- Instagram has flagged this login attempt. Please check your account for security challenges.::: {str(e)}"
             )
+            if not retry:
+                # Delete user login info and retry login
+                delete_user_login_info(username)
+                return login(username, password, retry=True)
+            else:
+                print_error(
+                    f"{username} -- Retry failed even after deleting previous login information. :: {str(e)}"
+                )
         else:
             print_error(
                 f"{username} -- An unexpected error occurred during login: {str(e)}"
