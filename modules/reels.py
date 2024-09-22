@@ -104,13 +104,13 @@ def post_reel(username, api):
 
             # Get captions
             CAPTION = generate_caption(username)
-            LOCATION = get_instagram_location(api)
+            # LOCATION = get_instagram_location(api)
 
             # Perform the upload using the file path directly
             media = api.clip_upload(
                 path=str(reel_path),
                 caption=CAPTION,
-                location=LOCATION,
+                # location=LOCATION,
                 extra_data={
                     "custom_accessibility_caption": CAPTION,
                     "share_to_feed": False,  # Do not share the reel to the main feed
