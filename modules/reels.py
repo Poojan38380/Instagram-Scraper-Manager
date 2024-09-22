@@ -181,35 +181,102 @@ def delete_reel(api):
         print_error(f"An unexpected error occurred: {str(e)}")
 
 
-def delete_reels_below_view_count(api, username, view_threshold):
+# def delete_reels_below_view_count(api, username, view_threshold):
+#     """
+#     Delete reels that have fewer views than the specified threshold, ignoring the first 9 posts.
+
+#     :param api: Instagram API instance.
+#     :param username: The username of the profile to check reels for.
+#     :param view_threshold: The minimum view count required for a reel to be kept.
+#     """
+#     try:
+#         print_header(f"Deleting reels below {view_threshold} views for {username}")
+
+#         profile = instaloader.Profile.from_username(L.context, username)
+
+#         post_count = 0  # Counter to keep track of posts
+
+#         for post in profile.get_posts():
+#             post_count += 1
+
+#             # Skip the first 9 posts
+#             if post_count <= 9:
+#                 print(f"Skipping post {post_count}: {post.shortcode}")
+#                 continue
+
+#             if post.typename == "GraphVideo" and post.is_video:
+#                 reel_views = post.video_view_count  # Get view count for the reel
+#                 reel_code = post.shortcode
+
+#                 # Check if the view count is below the threshold
+#                 if reel_views < view_threshold:
+#                     try:
+#                         print_success(
+#                             f"Reel {reel_code} has {reel_views} views, below threshold. Deleting..."
+#                         )
+
+#                         # Convert reel code to media PK and delete the reel
+#                         reel_pk = api.media_pk_from_code(reel_code)
+#                         api.media_delete(reel_pk)
+
+#                         print_success(f"Reel {reel_code} deleted successfully.")
+#                     except Exception as e:
+#                         print_error(f"Failed to delete reel {reel_code}: {str(e)}")
+#                 else:
+#                     print(f"Reel {reel_code} has {reel_views} views. Keeping it.")
+
+#     except instaloader.exceptions.InstaloaderException as e:
+#         print_error(f"Failed to load profile {username}: {str(e)}")
+#     except Exception as e:
+#         print_error(f"An unexpected error occurred: {str(e)}")
+
+
+def delete_reels_below_top_8_view_count(api, username):
     """
-    Delete reels that have fewer views than the specified threshold, ignoring the first 9 posts.
+    Delete reels that have fewer views than the minimum view count of the top 8 reels.
 
     :param api: Instagram API instance.
     :param username: The username of the profile to check reels for.
-    :param view_threshold: The minimum view count required for a reel to be kept.
     """
     try:
-        print_header(f"Deleting reels below {view_threshold} views for {username}")
+        print_header(f"Deleting reels below top 8 view count for {username}")
 
         profile = instaloader.Profile.from_username(L.context, username)
 
-        post_count = 0  # Counter to keep track of posts
+        # Fetch top 10 performing reels and get the top 8 view counts
+        reels_with_views = []
+        for post in profile.get_posts():
+            if post.typename == "GraphVideo" and post.is_video:
+                reels_with_views.append(
+                    {"shortcode": post.shortcode, "view_count": post.video_view_count}
+                )
 
+        # Check if we have at least 8 reels
+        if len(reels_with_views) < 8:
+            print_error(f"User {username} has fewer than 8 reels. Cannot proceed.")
+            return
+
+        # Sort reels by view count in descending order
+        reels_with_views.sort(key=lambda x: x["view_count"], reverse=True)
+
+        # Get the top 8 reels
+        top_8_reels = reels_with_views[:8]
+
+        # Extract the minimum view count from the top 8 reels
+        min_top_8_views = min([reel["view_count"] for reel in top_8_reels])
+        print_success(f"Minimum view count of top 8 reels: {min_top_8_views} views")
+
+        # Iterate through all posts to delete reels with view count less than the minimum of top 8
+        post_count = 0  # Counter to keep track of posts
         for post in profile.get_posts():
             post_count += 1
-
-            # Skip the first 9 posts
-            if post_count <= 9:
-                print(f"Skipping post {post_count}: {post.shortcode}")
-                continue
 
             if post.typename == "GraphVideo" and post.is_video:
                 reel_views = post.video_view_count  # Get view count for the reel
                 reel_code = post.shortcode
 
-                # Check if the view count is below the threshold
-                if reel_views < view_threshold:
+                # Delete reels below the minimum view count of top 8
+                if reel_views < min_top_8_views:
                     try:
                         print_success(
                             f"Reel {reel_code} has {reel_views} views, below threshold. Deleting..."

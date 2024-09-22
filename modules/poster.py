@@ -18,7 +18,7 @@ from modules.utils import (
 from modules.auth import login
 from modules.reels import (
     delete_reel,
-    delete_reels_below_view_count,
+    delete_reels_below_top_8_view_count,
     save_reel,
     post_reel,
 )
@@ -421,16 +421,6 @@ def delete_reels_below_threshold():
     if not selected_username:
         return
 
-    # Step 2: Ask the user for the view threshold
-    try:
-        view_threshold = int(get_user_input("Enter the view threshold: "))
-        if view_threshold < 0:
-            print_error("View threshold must be a non-negative number.")
-            return
-    except ValueError:
-        print_error("Please enter a valid number for the view threshold.")
-        return
-
     # Step 3: Retrieve the password for the selected username
     password = get_password_by_username(selected_username)
     if not password:
@@ -445,9 +435,8 @@ def delete_reels_below_threshold():
 
     # Step 5: Call the delete_reels_below_view_count function
     try:
-        delete_reels_below_view_count(api, selected_username, view_threshold)
-        print_success(
-            f"Deleted reels below {view_threshold} views for '{selected_username}'."
-        )
+        delete_reels_below_top_8_view_count(api, selected_username)
+        print_success(f"{selected_username} -- Removed low performing reels")
+
     except Exception as e:
-        print_error(f"An error occurred while deleting reels: {e}")
+        print_error(f"An error occurred while deleting low performing reels: {e}")
