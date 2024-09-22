@@ -197,6 +197,7 @@ def delete_reels_below_view_count(api, username, view_threshold):
         post_count = 0  # Counter to keep track of posts
 
         for post in profile.get_posts():
+            post_count += 1
 
             # Skip the first 9 posts
             if post_count <= 9:
