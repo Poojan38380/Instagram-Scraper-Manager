@@ -1,3 +1,5 @@
+import random
+import time
 import instaloader
 import requests
 from pathlib import Path
@@ -288,6 +290,13 @@ def delete_low_performing_reels(api, username, reels_to_keep=15):
                         print(
                             f"Reel {reel_code} has {reel_views} views, below threshold. Deleting..."
                         )
+
+                        # Random sleep to avoid bot detection
+                        sleep_duration = random.uniform(2, 6)
+                        print(
+                            f"Waiting for {sleep_duration:.2f} seconds before deleting..."
+                        )
+                        time.sleep(sleep_duration)
 
                         # Convert reel code to media PK and delete the reel
                         reel_pk = api.media_pk_from_code(reel_code)
