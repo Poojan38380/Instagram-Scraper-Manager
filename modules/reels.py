@@ -179,3 +179,52 @@ def delete_reel(api):
 
     except Exception as e:
         print_error(f"An unexpected error occurred: {str(e)}")
+
+
+def delete_reels_below_view_count(api, username, view_threshold):
+    """
+    Delete reels that have fewer views than the specified threshold, ignoring the first 9 posts.
+
+    :param api: Instagram API instance.
+    :param username: The username of the profile to check reels for.
+    :param view_threshold: The minimum view count required for a reel to be kept.
+    """
+    try:
+        print_header(f"Deleting reels below {view_threshold} views for {username}")
+
+        profile = instaloader.Profile.from_username(L.context, username)
+
+        post_count = 0  # Counter to keep track of posts
+
+        for post in profile.get_posts():
+
+            # Skip the first 9 posts
+            if post_count <= 9:
+                print(f"Skipping post {post_count}: {post.shortcode}")
+                continue
+
+            if post.typename == "GraphVideo" and post.is_video:
+                reel_views = post.video_view_count  # Get view count for the reel
+                reel_code = post.shortcode
+
+                # Check if the view count is below the threshold
+                if reel_views < view_threshold:
+                    try:
+                        print_success(
+                            f"Reel {reel_code} has {reel_views} views, below threshold. Deleting..."
+                        )
+
+                        # Convert reel code to media PK and delete the reel
+                        reel_pk = api.media_pk_from_code(reel_code)
+                        api.media_delete(reel_pk)
+
+                        print_success(f"Reel {reel_code} deleted successfully.")
+                    except Exception as e:
+                        print_error(f"Failed to delete reel {reel_code}: {str(e)}")
+                else:
+                    print(f"Reel {reel_code} has {reel_views} views. Keeping it.")
+
+    except instaloader.exceptions.InstaloaderException as e:
+        print_error(f"Failed to load profile {username}: {str(e)}")
+    except Exception as e:
+        print_error(f"An unexpected error occurred: {str(e)}")

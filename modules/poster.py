@@ -10,12 +10,18 @@ from modules.accounts import (
 from modules.utils import (
     get_random_member,
     check_array_and_proceed,
+    get_user_input,
     print_header,
     print_error,
     print_success,
 )
 from modules.auth import login
-from modules.reels import delete_reel, save_reel, post_reel
+from modules.reels import (
+    delete_reel,
+    delete_reels_below_view_count,
+    save_reel,
+    post_reel,
+)
 import schedule
 import time
 
@@ -405,3 +411,43 @@ def delete_reel_for_selected_account():
 
     except Exception as e:
         print_error(f"Failed to delete reel for selected account: {str(e)}")
+
+
+def delete_reels_below_threshold():
+    # Step 1: Select an account
+    selected_username = select_account_action(
+        "Select an account to delete reels below a certain view count:"
+    )
+    if not selected_username:
+        return
+
+    # Step 2: Ask the user for the view threshold
+    try:
+        view_threshold = int(get_user_input("Enter the view threshold: "))
+        if view_threshold < 0:
+            print_error("View threshold must be a non-negative number.")
+            return
+    except ValueError:
+        print_error("Please enter a valid number for the view threshold.")
+        return
+
+    # Step 3: Retrieve the password for the selected username
+    password = get_password_by_username(selected_username)
+    if not password:
+        print_error("Could not retrieve the password for the selected account.")
+        return
+
+    # Step 4: Log in with the selected account credentials
+    api = login(selected_username, password)
+    if api is None:
+        print_error("Failed to log in. Please check the credentials.")
+        return
+
+    # Step 5: Call the delete_reels_below_view_count function
+    try:
+        delete_reels_below_view_count(api, selected_username, view_threshold)
+        print_success(
+            f"Deleted reels below {view_threshold} views for '{selected_username}'."
+        )
+    except Exception as e:
+        print_error(f"An error occurred while deleting reels: {e}")

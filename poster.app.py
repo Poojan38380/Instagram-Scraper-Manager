@@ -1,5 +1,6 @@
 from modules.poster import (
     delete_reel_for_selected_account,
+    delete_reels_below_threshold,
     post_reel_multiple_times_for_account,
     post_reel_multiple_accounts,
     post_reel_to_all_accounts,
@@ -27,7 +28,8 @@ def main():
         6: all_accounts_flush,
         7: delete_reel_for_selected_account,
         8: post_reel_multiple_times_for_account,
-        9: sys.exit,
+        9: delete_reels_below_threshold,
+        10: sys.exit,
     }
 
     while True:
@@ -41,7 +43,8 @@ def main():
         print("6. All Account Flush")
         print("7. Delete a reel")
         print("8. Post reels multiple times for an account")
-        print("9. Exit")
+        print("9. Delete reels below certain view threshold")
+        print("10. Exit")
 
         try:
             action = int(get_user_input("Choose an action: "))
