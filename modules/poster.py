@@ -18,7 +18,7 @@ from modules.utils import (
 from modules.auth import login
 from modules.reels import (
     delete_reel,
-    delete_reels_below_top_8_view_count,
+    delete_low_performing_reels,
     save_reel,
     post_reel,
 )
@@ -435,7 +435,7 @@ def delete_reels_below_threshold():
 
     # Step 5: Call the delete_reels_below_view_count function
     try:
-        delete_reels_below_top_8_view_count(api, selected_username)
+        delete_low_performing_reels(api, selected_username)
         print_success(f"{selected_username} -- Removed low performing reels")
 
     except Exception as e:

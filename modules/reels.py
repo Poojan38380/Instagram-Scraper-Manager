@@ -231,19 +231,22 @@ def delete_reel(api):
 #         print_error(f"An unexpected error occurred: {str(e)}")
 
 
-def delete_reels_below_top_8_view_count(api, username):
+def delete_low_performing_reels(api, username, reels_to_keep=15):
     """
-    Delete reels that have fewer views than the minimum view count of the top 8 reels.
+    Delete reels that have fewer views than the minimum view count of the top reels_to_keep reels.
 
     :param api: Instagram API instance.
     :param username: The username of the profile to check reels for.
+    :param reels_to_keep: Number of top-performing reels to keep.
     """
     try:
-        print_header(f"Deleting reels below top 8 view count for {username}")
+        print_header(
+            f"Deleting reels below top {reels_to_keep} view count for {username}"
+        )
 
         profile = instaloader.Profile.from_username(L.context, username)
 
-        # Fetch top 10 performing reels and get the top 8 view counts
+        # Fetch reels and their view counts
         reels_with_views = []
         for post in profile.get_posts():
             if post.typename == "GraphVideo" and post.is_video:
@@ -251,22 +254,26 @@ def delete_reels_below_top_8_view_count(api, username):
                     {"shortcode": post.shortcode, "view_count": post.video_view_count}
                 )
 
-        # Check if we have at least 8 reels
-        if len(reels_with_views) < 8:
-            print_error(f"User {username} has fewer than 8 reels. Cannot proceed.")
+        # Check if we have enough reels to compare
+        if len(reels_with_views) < reels_to_keep:
+            print_error(
+                f"User {username} has fewer than {reels_to_keep} reels. Cannot proceed."
+            )
             return
 
         # Sort reels by view count in descending order
         reels_with_views.sort(key=lambda x: x["view_count"], reverse=True)
 
-        # Get the top 8 reels
-        top_8_reels = reels_with_views[:8]
+        # Get the top reels_to_keep reels
+        top_reels = reels_with_views[:reels_to_keep]
 
-        # Extract the minimum view count from the top 8 reels
-        min_top_8_views = min([reel["view_count"] for reel in top_8_reels])
-        print_success(f"Minimum view count of top 8 reels: {min_top_8_views} views")
+        # Extract the minimum view count from the top reels_to_keep reels
+        min_top_views = min([reel["view_count"] for reel in top_reels])
+        print_success(
+            f"Minimum view count of top {reels_to_keep} reels: {min_top_views} views"
+        )
 
-        # Iterate through all posts to delete reels with view count less than the minimum of top 8
+        # Iterate through all posts to delete reels with view count less than the minimum of top reels_to_keep
         post_count = 0  # Counter to keep track of posts
         for post in profile.get_posts():
             post_count += 1
@@ -275,10 +282,10 @@ def delete_reels_below_top_8_view_count(api, username):
                 reel_views = post.video_view_count  # Get view count for the reel
                 reel_code = post.shortcode
 
-                # Delete reels below the minimum view count of top 8
-                if reel_views < min_top_8_views:
+                # Delete reels below the minimum view count of top reels_to_keep
+                if reel_views < min_top_views:
                     try:
-                        print_success(
+                        print(
                             f"Reel {reel_code} has {reel_views} views, below threshold. Deleting..."
                         )
 
