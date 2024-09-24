@@ -45,6 +45,7 @@ def interact_with_reels(
                 reel_id = reel.id
                 reel_code = reel.code
                 caption_text = reel.caption_text
+                video_duration = reel.video_duration
 
                 try:
                     # Check if the total time limit has been reached
@@ -57,16 +58,6 @@ def interact_with_reels(
                         )
                         return
 
-                    # Simulate time spent on reel
-                    time_on_reel = random.uniform(
-                        7, 35
-                    )  # More randomness (7 to 35 seconds)
-                    print(
-                        f"{username} : Viewing reel {reel_code} for {time_on_reel:.2f} seconds..."
-                    )
-                    api.media_seen([reel_id])  # Mark the media as seen
-                    time.sleep(time_on_reel)
-
                     # Check if the caption contains any of the specified keywords
                     contains_keyword = False
 
@@ -78,6 +69,23 @@ def interact_with_reels(
 
                         if contains_keyword:
                             print(f"{username} : reel {reel_code} contains keywords.")
+
+                    # If the caption contains keywords, watch for 200-500% of video duration
+                    # Otherwise, watch for less than 50% of the video duration
+                    if contains_keyword:
+                        time_on_reel = (
+                            random.uniform(2.0, 5.0) * video_duration
+                        )  # 200% to 500% of video duration
+                    else:
+                        time_on_reel = (
+                            random.uniform(0.1, 0.5) * video_duration
+                        )  # Less than 50% of video duration
+
+                    print(
+                        f"{username} : Viewing reel {reel_code} for {time_on_reel:.2f} seconds..."
+                    )
+                    api.media_seen([reel_id])  # Mark the media as seen
+                    time.sleep(time_on_reel)
 
                     # Adjust the action and comment probabilities based on whether keywords were found
                     effective_action_probability = 1 if contains_keyword else 0

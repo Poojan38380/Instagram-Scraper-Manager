@@ -43,7 +43,7 @@ def main():
         print("6. All Account Flush")
         print("7. Delete a reel")
         print("8. Post reels multiple times for an account")
-        print("9. Delete reels below certain view threshold")
+        print("9. Delete low performing reels")
         print("10. Exit")
 
         try:
