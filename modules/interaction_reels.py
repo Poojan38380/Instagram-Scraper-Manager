@@ -67,42 +67,47 @@ def interact_with_reels(
                             for keyword in keywords
                         )
 
-                        if contains_keyword:
-                            print(f"{username} : reel {reel_code} contains keywords.")
-
                     # If the caption contains keywords, watch for 200-500% of video duration
                     # Otherwise, watch for less than 50% of the video duration
                     if contains_keyword:
                         time_on_reel = (
                             random.uniform(2.0, 5.0) * video_duration
                         )  # 200% to 500% of video duration
+
+                        print(
+                            f"{username} : Viewing reel {reel_code} for {time_on_reel:.2f} seconds... ⭐"
+                        )
+                        api.media_seen([reel_id])  # Mark the media as seen
+                        time.sleep(time_on_reel)
+
+                        # Adjust the action and comment probabilities based on whether keywords were found
+                        effective_action_probability = (
+                            action_probability + keyword_action_boost
+                        )
+                        effective_comment_probability = effective_action_probability / 2
+
+                        # Randomly decide whether to like the reel
+                        if random.random() < effective_action_probability:
+                            api.media_like(reel_id)
+                            print(f"{username} -- Liked reel {reel_code}.")
+
+                        # Randomly decide whether to comment on the reel
+                        if random.random() < effective_comment_probability:
+                            comment_with_typos = get_comment_for_reel()
+                            api.media_comment(reel_id, comment_with_typos)
+                            print(
+                                f"{username} -- Commented on reel {reel_code}: {comment_with_typos}"
+                            )
                     else:
                         time_on_reel = (
                             random.uniform(0.1, 0.5) * video_duration
                         )  # Less than 50% of video duration
 
-                    print(
-                        f"{username} : Viewing reel {reel_code} for {time_on_reel:.2f} seconds..."
-                    )
-                    api.media_seen([reel_id])  # Mark the media as seen
-                    time.sleep(time_on_reel)
-
-                    # Adjust the action and comment probabilities based on whether keywords were found
-                    effective_action_probability = 1 if contains_keyword else 0
-                    effective_comment_probability = effective_action_probability / 2
-
-                    # Randomly decide whether to like the reel
-                    if random.random() < effective_action_probability:
-                        api.media_like(reel_id)
-                        print(f"{username} -- Liked reel {reel_code}.")
-
-                    # Randomly decide whether to comment on the reel
-                    if random.random() < effective_comment_probability:
-                        comment_with_typos = get_comment_for_reel()
-                        api.media_comment(reel_id, comment_with_typos)
                         print(
-                            f"{username} -- Commented on reel {reel_code}: {comment_with_typos}"
+                            f"{username} : Viewing reel {reel_code} for {time_on_reel:.2f} seconds..."
                         )
+                        api.media_seen([reel_id])  # Mark the media as seen
+                        time.sleep(time_on_reel)
 
                     interacted_reels += 1
 
