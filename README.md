@@ -8,6 +8,7 @@ Instagram-Scraper-Manager is a Python-based tool designed to scrape content from
 - **Automated Posting**: Post reels to single or multiple accounts with various strategies.
 - **Session Management**: Avoid logging in repeatedly with saved sessions.
 - **Customization**: Add margins, captions, and hashtags before posting to enhance reach.
+- **Auto Reel/Feed scrolling**: Automatic reel/feed scrolling(keyword supported) to increase page value
 
 ## How to Use
 
