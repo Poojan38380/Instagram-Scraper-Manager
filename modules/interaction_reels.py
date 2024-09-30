@@ -12,8 +12,7 @@ def interact_with_reels(
     api,
     username="",
     total_time=60,
-    action_probability=0.2,
-    keyword_action_boost=0.5,  # Additional boost for actions when keywords are found
+    action_probability=0.5,
     keywords=[],
     idle_chance=0.1,  # Chance to "do nothing" for a period of time
     idle_duration=(5, 20),  # Random idle time to simulate distraction
@@ -81,11 +80,10 @@ def interact_with_reels(
                         time.sleep(time_on_reel)
 
                         # Adjust the action and comment probabilities based on whether keywords were found
-                        effective_action_probability = (
-                            action_probability + keyword_action_boost
+                        effective_action_probability = action_probability
+                        effective_comment_probability = (
+                            effective_action_probability / 10
                         )
-                        effective_comment_probability = effective_action_probability / 2
-
                         # Randomly decide whether to like the reel
                         if random.random() < effective_action_probability:
                             api.media_like(reel_id)
