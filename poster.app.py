@@ -13,7 +13,7 @@ from modules.utils import (
     print_header,
     print_error,
     get_user_input,
-    wait_for_enter,
+    
 )
 import sys
 
@@ -33,7 +33,6 @@ def main():
     }
 
     while True:
-        wait_for_enter()
         print_header("Post Reels")
         print("1. Post to all accounts")
         print("2. Post to single account")
